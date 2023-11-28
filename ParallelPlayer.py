@@ -1,6 +1,7 @@
 
 
 from PyQt6 import QtCore
+import numpy as np
 
 #
 #   Thread wrapper
@@ -21,4 +22,4 @@ class ParallelTurn(QtCore.QThread):
         self.next_move = ((0,0), (0,0))
 
     def run(self):
-        self.next_move = self.AI(self.player_sequence, self.board, self.time_budget)
+        self.next_move = self.AI(self.player_sequence, np.copy(self.board), self.time_budget)

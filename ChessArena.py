@@ -82,7 +82,6 @@ class ChessArena(QtWidgets.QWidget):
 
         #   Prepare board view
         rotated_view_board = np.rot90(self.board, int(next_player_color[2]))
-
         self.current_player = ParallelTurn(self.players_AI[next_player_color[1]], self.player_order, rotated_view_board, self.max_time_budget)
         self.current_player.setTerminationEnabled(True)
         self.current_player.start()
