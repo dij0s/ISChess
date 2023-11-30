@@ -1,6 +1,6 @@
 from PyQt6 import QtCore
-
 from Bots.ChessBotList import register_chess_bot
+from lib.Timer import Timer
 
 from lib.PlayerSequence import PlayerSequence
 
