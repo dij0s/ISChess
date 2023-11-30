@@ -2,20 +2,14 @@ from PyQt6 import QtCore
 
 from Bots.ChessBotList import register_chess_bot
 
-def chess_bot(player_sequence, board, time_budget, **kwargs):
+from lib.PlayerSequence import PlayerSequence
 
-    color = player_sequence[1]
-    for x in range(board.shape[0]-1):
-        for y in range(board.shape[1]):
-            if board[x,y] != "p"+color:
-                continue
-            if y > 0 and board[x+1,y-1] != '' and board[x+1,y-1][-1] != color:
-                return (x,y), (x+1,y-1)
-            if y < board.shape[1] - 1 and board[x+1,y+1] != '' and board[x+1,y+1][1] != color:
-                return (x,y), (x+1,y+1)
-            elif board[x+1,y] == '':
-                return (x,y), (x+1,y)
+def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwargs):
+    # le seul taff du manager est le fait d'être
+    # capable de traiter qui joue contre qui et
+    # dans quel ordre
+    playerManager: PlayerSequence = PlayerSequence(player_sequence)
 
-    return (0,0), (0,0)
+    return (1,0), (2,0)
 
 register_chess_bot("Bogoss Overdose", chess_bot)
