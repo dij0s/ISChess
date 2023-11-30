@@ -1,6 +1,7 @@
 import time
 
 class Timer:
+    """Class used to ease the time management for our chess bot"""
     timeStart = 0
 
     def __init__(self):
