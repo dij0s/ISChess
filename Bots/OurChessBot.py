@@ -9,6 +9,10 @@ def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwarg
     # capable de traiter qui joue contre qui et
     # dans quel ordre
     playerManager: PlayerSequence = PlayerSequence(player_sequence)
+    # can do some pretty cool things
+    print(next(playerManager))
+    print(next(playerManager))
+    print(next(playerManager))
 
     return (1,0), (2,0)
 
