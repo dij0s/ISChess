@@ -6,10 +6,11 @@ class Timer:
 
     def __init__(self):
         self.timeStart = 0
-    def initTimer(self):
-        """ Initialise the timer """
+
+    def start(self):
+        """ Initialize the timer """
         self.timeStart = time.time()
 
-    def getDelta(self):
-        """ returns the delta time since the last initTimer"""
+    def getElapsed(self):
+        """ returns the elapsed time since the last start"""
         return time.time() - self.timeStart

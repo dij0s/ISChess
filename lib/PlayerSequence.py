@@ -1,10 +1,14 @@
 class PlayerSequence(object):
+    """
+    Class used to ease the players sequence handling.
+    The following class is only instantiated once as
+    it is a singleton.
+    """
+    
     __TEAM_STRING_LENGTH: int = 3
-
     __TEAM_STRING_ID_POSITION: int = 0
     __TEAM_STRING_COLOR_POSITION: int = 1
-    # def getCurrentColor(self, sequence: str) -> chr:
-    #     return sequence[1]
+
     def __getTeams(self, sequence: str) -> dict:
         teams: dict = {}
         # complete dictionnary of the
@@ -40,4 +44,8 @@ class PlayerSequence(object):
             yield from self.__teams
 
     def __next__(self) -> chr:
+        """
+        Returns next team's color in order of play.
+        """
+        # forgot return keyword
         return next(self.__teamsIterator)
