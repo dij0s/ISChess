@@ -1,16 +1,22 @@
 import copy
 
+from lib.GameManager.PlayerSequence import PlayerSequence
 
 class Board:
-    board: list[list[str]]
-    def __init__(self, boardIn: list[list[str]]):
-        """Initialise a board as boardIn: list[list[str]]"""
+    def __init__(self, boardIn: list[list[str]], playerSequence: PlayerSequence):
+        """Initialize a board as boardIn: list[list[str]]"""
         self.board = boardIn
+        self.playerSequence = playerSequence
 
-    def getSize(self):
-        """Returns a Tuple describing the size of the board (lines: int, columns: int)"""
+    def getSize(self) -> tuple[int, int]:
+        """Returns a tuple describing the size of the board (lines: int, columns: int)"""
         return len(self.board), len(self.board[1])
 
-    def getBoardCopy(self):
+    def getBoardCopy(self) -> list[list[str]]:
         """Returns a copy of the board list, independent of the base object"""
         return copy.deepcopy(self.board)
+    
+    # definition de l'heuristique ?
+    # gestion et calculs du prochain coup
+    # prendre pièce avec plus petit coup et
+    # calculer coups suivants ?

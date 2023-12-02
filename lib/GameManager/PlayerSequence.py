@@ -40,7 +40,7 @@ class PlayerSequence(object):
         self.__teamsIterator = self.__iter__()
 
     def __iter__(self):
-        while True:
+        while 1:
             yield from self.__teams
 
     def __next__(self) -> chr:
