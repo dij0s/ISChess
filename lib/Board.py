@@ -5,6 +5,9 @@ from lib.GameManager.PlayerSequence import PlayerSequence
 class Board:
     def __init__(self, boardIn: list[list[str]], playerSequence: PlayerSequence):
         """Initialize a board as boardIn: list[list[str]]"""
+
+        # maybe, at init, store all the pieces
+        # of a given player in a hashmap..
         self.board = boardIn
         self.playerSequence = playerSequence
 
