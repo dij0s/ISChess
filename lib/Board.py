@@ -22,9 +22,10 @@ class Board:
         # of a given player in a hashmap..
         self.board = np.array(board)
         self.playerSequence = playerSequence
+        self.heuristic = heuristic
         self.weights = heuristic.getWeights()
 
-    def getTurnNumber(self) -> int:
+    def __getTurnNumber(self) -> int:
         """
         Returns the current turn number.
         """
@@ -71,7 +72,7 @@ class Board:
     def rotateBoard(self, nbrRot:int = 2) -> np.ndarray:
         """
         Function used to rotate the board for easier opponent simulation.
-        The argument nbrRot define how many 90 degrees rotation will be
+        The argument nbrRot defines how many 90 degrees rotation will be
         performed. (default: 2, 180 degrees)
         """
 
@@ -79,14 +80,64 @@ class Board:
         # that we can get the board rotation
         # from the PlayerSequence object
 
+        # attention, only returns a view and not a copy
         return np.rot90(self.board, k=nbrRot, axes=(0, 1))
     
-    def computeNextMove(self):
-        # blanc joue
-        print(next(self.playerSequence))
-        # calculer meilleur move blanc
+    def computeNextMove(self) -> list[tuple[int, int]]:
+        """
+        This function returns the following move that shall
+        be played based on a minimax alpha beta algorithm.
+        """
 
+        def minimaxAlphaBeta(board: Board,
+                             depth: int,
+                             alpha: float,
+                             beta: float) -> float:
+            """
+            Helper function used to actually compute the next move, recursively.
+            """
 
+            # ATTENTION, IF WE 
+
+            isMaximizing: bool = True if next(self.playerSequence) is 'w' else False
+            # shall check for game over too
+            # maybe define a function that
+            # checks that
+            if depth == 0:
+                return self.computeEvaluation()
+
+            if isMaximizing:
+                maxEvaluation: float = float('-inf')
+                # pieces shall be gotten in the ordred
+                # of their weight, ascending ; hence
+                # the following shall be corrected
+                for piece in self.childs:
+                    currentEvaluation: float = minimaxAlphaBeta(piece, depth-1, alpha, beta)
+                    
+                    maxEvaluation = max(maxEvaluation, currentEvaluation)
+                    alpha: float = max(alpha, currentEvaluation)
+                    
+                    if beta <= alpha:
+                        break
+                
+                return maxEvaluation
+            
+            else:
+                minEvaluation: float = float('inf')
+
+                for piece in self.childs:
+                    currentEvaluation: float = minimaxAlphaBeta(piece, depth - 1, alpha, beta)
+
+                    minEvaluation = min(minEvaluation, currentEvaluation)
+                    beta: float = min(beta, currentEvaluation)
+
+                    if beta <= alpha:
+                        break
+
+                return minEvaluation
+            
+        depth: int = self.heuristic.computeDepth(self.__getTurnNumber())
+        minimaxAlphaBeta(self, depth, float('-inf'), float('inf'))
     
     # definition de l'heuristique ?
     # gestion et calculs du prochain coup

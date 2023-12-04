@@ -27,7 +27,7 @@ class TimeScalingHeuristic(Heuristic):
 
         self.__BASE_DEPTH_: int = 4
 
-    def getWeights(self) -> dict:
+    def getWeights(self) -> dict[chr, int]:
         return self.__WEIGHTS
         
     def computeDepth(self, turn: int) -> int:

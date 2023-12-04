@@ -17,7 +17,6 @@ def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwarg
     heuristic: TimeScalingHeuristic = TimeScalingHeuristic()
    
     currentBoard: Board = Board(board, playerSequence, heuristic)
-    print(currentBoard.getTurnNumber())
 
     return (1,0), (2,0)
 
