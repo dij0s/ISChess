@@ -1,14 +1,12 @@
 import numpy as np
 from lib.Board import Board
 
-
 def MoveKing(color: chr, pos: tuple[int,int], boardClass: Board):
     board = boardClass.board
     for i in range(-1, 2, 1):
         for j in range(-1, 2, 1):
             if not(j == 0 and i == 0) and legalMove(color, (pos[0] + i, pos[1] + j), board):
                 yield [pos[0] + i, pos[1] + j]
-
 
 def MoveQueen(color: chr, pos: tuple[int, int], boardClass: Board):
     board = boardClass.board

@@ -13,16 +13,11 @@ def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwarg
 
     timer: Timer = Timer()
 
-    # le seul taff du manager est le fait d'être
-    # capable de traiter qui joue contre qui et
-    # dans quel ordre
     playerSequence: PlayerSequence = PlayerSequence(player_sequence)
-    currentBoard: Board = Board(board, playerSequence)
-
     heuristic: TimeScalingHeuristic = TimeScalingHeuristic()
-    print(heuristic.getWeights(0))
-
-    print(timer.getElapsed())
+   
+    currentBoard: Board = Board(board, playerSequence, heuristic)
+    print(currentBoard.getTurnNumber())
 
     return (1,0), (2,0)
 
