@@ -5,6 +5,9 @@ import random
 import time
 
 import MoveByPiece
+from lib.Board import Board
+from lib.GameManager.PlayerSequence import PlayerSequence
+from lib import BetterMoveByPiece
 
 # Dictionnaire contenant les valeurs des pièces
 piecesWeight = {
@@ -63,7 +66,13 @@ def moves(piece, initPos):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    everyMoveEver = []
+
+    newBoard = Board(board, PlayerSequence("0w01b2"))
+
+    newBoard.rotateBoard()
+    print(newBoard.board.shape)
+
+    '''everyMoveEver = []
     turn = "b"
 
     t1 = time.time()
@@ -108,6 +117,6 @@ if __name__ == '__main__':
                           # 500 iter = 0.050s
                           # 250 iter = 0.041s     Plus on avance, moins il y a de pièces, plus chaque tour est rapide
                           # 20  iter = 0.004s
-
+'''
 
 #Rotation du plateau ou argument pour donner la direction?
