@@ -3,6 +3,8 @@ import numpy as np
 from lib.GameManager.PlayerSequence import PlayerSequence
 
 class Board:
+
+    
     def __init__(self, boardIn: list[list[str]], playerSequence: PlayerSequence):
         """Initialize a board as boardIn: list[list[str]]"""
 
@@ -32,7 +34,7 @@ class Board:
         # blanc joue
         print(next(self.playerSequence))
         # calculer meilleur move blanc
-        
+
 
     
     # definition de l'heuristique ?
