@@ -1,8 +1,6 @@
 
 CHESS_BOT_LIST = {}
 
-print("hello")
-
 def register_chess_bot(name, function):
     global CHESS_BOT_LIST
     if name in CHESS_BOT_LIST:

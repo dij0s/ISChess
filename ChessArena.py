@@ -37,6 +37,7 @@ class ChessArena(QtWidgets.QWidget):
 
         #   Render for chess board
         self.chess_scene = QtWidgets.QGraphicsScene()
+        self.chess_scene.setBackgroundBrush(QtGui.QBrush(QtGui.QColor("white")))
         #self.chess_scene.setBackgroundBrush(QBrush(Qt6.lightGray))
         self.chessboardView.setScene(self.chess_scene)
 
@@ -51,6 +52,7 @@ class ChessArena(QtWidgets.QWidget):
     def add_system_message(self, message):
         msg_widget = QtWidgets.QLabel(message)
         msg_widget.setWordWrap(True)
+        print("[SYS]", message)
         self.systemMessagesLayout.addWidget(msg_widget)
         self.systemMessagesBox = QtWidgets.QScrollArea()
         self.systemMessagesBox.verticalScrollBar().setSliderPosition(self.systemMessagesBox.verticalScrollBar().maximum())
@@ -97,18 +99,19 @@ class ChessArena(QtWidgets.QWidget):
             self.current_player.terminate()
             self.add_system_message(COLOR_NAMES[self.current_player.color] + " did not end his turn")
         else:
-            color = self.current_player.color
+
+            player_color = self.current_player.color
 
             next_play = self.current_player.next_move
 
             if not move_is_valid(self.player_order, next_play, self.current_player.board):
-                self.add_system_message(COLOR_NAMES[color] + " invalid move from " + str(next_play[0]) + " to " + str(next_play[1]))
+                self.add_system_message(COLOR_NAMES[player_color] + " invalid move from " + str(next_play[0]) + " to " + str(next_play[1]))
                 return
 
-            self.add_system_message(COLOR_NAMES[color] + " moved " + CHESS_PIECES_NAMES[self.current_player.board[next_play[0][0], next_play[0][1]][0]] +
+            self.add_system_message(COLOR_NAMES[player_color] + " moved " + CHESS_PIECES_NAMES[self.current_player.board[next_play[0][0], next_play[0][1]][0]] +
                                     " from " + str(next_play[0]) + " to " + str(next_play[1]))
             if self.current_player.board[next_play[1][0], next_play[1][1]] != '':
-                self.add_system_message(COLOR_NAMES[color] + " captured " + COLOR_NAMES[self.current_player.board[next_play[0][0], next_play[0][1]][1]] + " " + CHESS_PIECES_NAMES[self.current_player.board[next_play[0][0], next_play[0][1]][0]])
+                self.add_system_message(COLOR_NAMES[player_color] + " captured " + COLOR_NAMES[self.current_player.board[next_play[0][0], next_play[0][1]][1]] + " " + CHESS_PIECES_NAMES[self.current_player.board[next_play[0][0], next_play[0][1]][0]])
 
             #   apply move
             self.current_player.board[next_play[1][0], next_play[1][1]] = self.current_player.board[next_play[0][0], next_play[0][1]]
@@ -118,15 +121,14 @@ class ChessArena(QtWidgets.QWidget):
             if self.current_player.board[next_play[1][0], next_play[1][1]][0] == 'p' and next_play[1][0] == self.current_player.board.shape[0]-1:
                 self.current_player.board[next_play[1][0], next_play[1][1]] = "q" + self.current_player.board[next_play[1][0], next_play[1][1]][1]
 
-            #   Check if this player won
-            for other in self.player_order:
-                if color == other:
-                    continue
+            all_other_defeated = True
+            for row in self.board:
+                for elem in row:
+                    if len(elem) > 0 and elem[0] == 'k':
+                        if self.player_order[self.player_order.find(elem[1])-1] != self.current_player.team:
+                            all_other_defeated = False
 
-                all_other_defeated = check_player_defeated(other, self.board)
-                if not check_player_defeated(other, self.board):
-                    break
-            all_other_defeated = color if all_other_defeated else False
+            all_other_defeated = player_color if all_other_defeated else False
 
         #   Update board state
         self.current_player = None
@@ -147,7 +149,7 @@ class ChessArena(QtWidgets.QWidget):
         if winner is None:
             self.add_system_message("# Match ended in a draw")
         else:
-            self.add_system_message("# COLOR_NAMES[winner] won the match")
+            self.add_system_message("# ",COLOR_NAMES[winner]," won the match")
 
     def select_and_load_board(self):
         path = QtWidgets.QFileDialog.getOpenFileName(self, "Select board", "C:\\Users\\Louis\\Desktop\\ISChess\\Data\\maps", "Board File (*.brd)")
@@ -173,6 +175,10 @@ class ChessArena(QtWidgets.QWidget):
                 self.player_order = lines[0]
                 elems = [l.replace('--', '').split(",") for l in lines[1:]]
 
+                #   Protection against final empty lines
+                while len(elems) > 0 and len(elems[-1]) == 0:
+                    del elems[-1]
+
                 #   check lines length equals
                 for l in elems:
                     if len(l) != len(elems[0]):
@@ -180,7 +186,9 @@ class ChessArena(QtWidgets.QWidget):
 
                 return np.array(elems, dtype='O')
         except Exception as e:
+            print(e)
             return None
+
         return None
 
     def load_assets(self):
@@ -215,7 +223,10 @@ class ChessArena(QtWidgets.QWidget):
         self.playersList.addItem(QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding))
 
     def setup_board(self):
-        self.chessboardView.items().clear()
+
+        for i in reversed(self.chess_scene.items()):
+            self.chess_scene.removeItem((i))
+
         #   Maintain the pointer towards the items on the board
         self.piece_items = np.array([[None] * self.board.shape[1]]*self.board.shape[0], dtype=object)
         #   Maintain list of colored pixmap

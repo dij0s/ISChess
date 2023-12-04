@@ -21,11 +21,11 @@ def move_is_valid(player_order, move, board):
         return board[pos[0], pos[1]][1]
 
     def team_at(pos):
-        col = color_at()
-        return int(player_order.find(col)-1)
+        col = color_at(pos)
+        return int(player_order[int(player_order.find(col)-1)])
 
     def can_move_or_capture(pos):
-        return is_free(pos) and team_at(pos) != player_team
+        return is_free(pos) or team_at(pos) != player_team
 
     def can_move_diagonally():
         dx = end[0] - start[0]
@@ -89,7 +89,9 @@ def move_is_valid(player_order, move, board):
             return is_free(end)
         else:
             #   Capture ?
-            return abs(end[1] - start[1]) == 1 and not is_free(end) and color_at(end) != player_color
+            print(team_at(end), "!=", player_team, "==", team_at(end) != player_team)
+            print(abs(end[1] - start[1]) == 1 and (not is_free(end)) and int(team_at(end)) != player_team)
+            return abs(end[1] - start[1]) == 1 and (not is_free(end)) and int(team_at(end)) != player_team
     elif piece == 'n':
         dx = abs(end[0] - start[0])
         dy = abs(end[1] - start[1])

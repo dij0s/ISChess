@@ -19,6 +19,13 @@ class Board:
         """Returns a copy of the board list, independent of the base object"""
         return copy.deepcopy(self.board)
     
+    def computeNextMove(self):
+        # blanc joue
+        print(next(self.playerSequence))
+        # calculer meilleur move blanc
+        
+
+    
     # definition de l'heuristique ?
     # gestion et calculs du prochain coup
     # prendre pièce avec plus petit coup et
