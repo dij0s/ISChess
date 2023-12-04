@@ -7,6 +7,7 @@ import time
 # an extra time ? idk
 from lib.GameManager import *
 from lib.Board import Board
+from lib.Heuristic.TimeScalingHeuristic import TimeScalingHeuristic
 
 def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwargs):   
 
@@ -17,6 +18,9 @@ def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwarg
     # dans quel ordre
     playerSequence: PlayerSequence = PlayerSequence(player_sequence)
     currentBoard: Board = Board(board, playerSequence)
+
+    heuristic: TimeScalingHeuristic = TimeScalingHeuristic()
+    print(heuristic.getWeights(0))
 
     print(timer.getElapsed())
 
