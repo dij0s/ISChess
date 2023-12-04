@@ -1,17 +1,25 @@
 import copy
 
 from lib.GameManager.PlayerSequence import PlayerSequence
+from lib.Heuristic import Heuristic
 
-class Board:
+class aBoard:
 
     
-    def __init__(self, boardIn: list[list[str]], playerSequence: PlayerSequence):
-        """Initialize a board as boardIn: list[list[str]]"""
+    def __init__(self,
+                 board: list[list[str]],
+                 playerSequence: PlayerSequence,
+                 heuritic: Heuristic):
+        """
+        Initializes a Board object given a board: list[list[int]],
+        a player sequence: PlayerSequence and a heuristic: Heuristic 
+        """
 
         # maybe, at init, store all the pieces
         # of a given player in a hashmap..
-        self.board = boardIn
+        self.board = board
         self.playerSequence = playerSequence
+        self.heuristic = heuritic
 
     def getSize(self) -> tuple[int, int]:
         """Returns a tuple describing the size of the board (lines: int, columns: int)"""
