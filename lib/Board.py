@@ -109,7 +109,6 @@ class Board:
                                     currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
                                     maxEvaluation = max(maxEvaluation, currentEvaluation)
                                     alpha: float = max(alpha, currentEvaluation)
-
                                     if beta <= alpha:
                                         break
 
@@ -120,7 +119,6 @@ class Board:
                                     currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
                                     maxEvaluation = max(maxEvaluation, currentEvaluation)
                                     alpha: float = max(alpha, currentEvaluation)
-
                                     if beta <= alpha:
                                         break
 
@@ -131,7 +129,6 @@ class Board:
                                     currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
                                     maxEvaluation = max(maxEvaluation, currentEvaluation)
                                     alpha: float = max(alpha, currentEvaluation)
-
                                     if beta <= alpha:
                                         break
 
@@ -142,7 +139,6 @@ class Board:
                                     currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
                                     maxEvaluation = max(maxEvaluation, currentEvaluation)
                                     alpha: float = max(alpha, currentEvaluation)
-
                                     if beta <= alpha:
                                         break
 
@@ -153,7 +149,6 @@ class Board:
                                     currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
                                     maxEvaluation = max(maxEvaluation, currentEvaluation)
                                     alpha: float = max(alpha, currentEvaluation)
-
                                     if beta <= alpha:
                                         break
 
@@ -162,31 +157,85 @@ class Board:
                                     board[k[0]][k[1]] = board[i][j]
                                     board[i][j] = ""
                                     currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
-                                maxEvaluation = max(maxEvaluation, currentEvaluation)
-                                alpha: float = max(alpha, currentEvaluation)
-
-                                if beta <= alpha:
-                                    break
+                                    maxEvaluation = max(maxEvaluation, currentEvaluation)
+                                    alpha: float = max(alpha, currentEvaluation)
+                                    if beta <= alpha:
+                                        break
 
                 return maxEvaluation
 
             else:
                 minEvaluation: float = float('inf')
 
-                for piece in self.childs:
-                    currentEvaluation: float = minimaxAlphaBeta(piece, depth - 1, alpha, beta)
+                for i in range(0, len(board)):
+                    for j in range(0, len(board[0])):  # Here we check for every possible move for our pieces
+                        # and checking their outcome
+                        match board[i][j]:
+                            case "pb":
+                                for k in BetterMoveByPiece.MovePawn("w", (i, j), board):
+                                    board[k[0]][k[1]] = board[i][j]
+                                    board[i][j] = ""
+                                    currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
+                                    minEvaluation = min(minEvaluation, currentEvaluation)
+                                    beta: float = min(beta, currentEvaluation)
+                                    if beta <= alpha:
+                                        break
 
-                    minEvaluation = min(minEvaluation, currentEvaluation)
-                    beta: float = min(beta, currentEvaluation)
+                            case "nb":
+                                for k in BetterMoveByPiece.MoveKnight("w", (i, j), board):
+                                    board[k[0]][k[1]] = board[i][j]
+                                    board[i][j] = ""
+                                    currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
+                                    minEvaluation = min(minEvaluation, currentEvaluation)
+                                    beta: float = min(beta, currentEvaluation)
+                                    if beta <= alpha:
+                                        break
 
-                    if beta <= alpha:
-                        break
+                            case "bb":
+                                for k in BetterMoveByPiece.MoveBishop("w", (i, j), board):
+                                    board[k[0]][k[1]] = board[i][j]
+                                    board[i][j] = ""
+                                    currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
+                                    minEvaluation = min(minEvaluation, currentEvaluation)
+                                    beta: float = min(beta, currentEvaluation)
+                                    if beta <= alpha:
+                                        break
+
+                            case "rb":
+                                for k in BetterMoveByPiece.MoveRook("w", (i, j), board):
+                                    board[k[0]][k[1]] = board[i][j]
+                                    board[i][j] = ""
+                                    currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
+                                    minEvaluation = min(minEvaluation, currentEvaluation)
+                                    beta: float = min(beta, currentEvaluation)
+                                    if beta <= alpha:
+                                        break
+
+                            case "qb":
+                                for k in BetterMoveByPiece.MoveQueen("w", (i, j), board):
+                                    board[k[0]][k[1]] = board[i][j]
+                                    board[i][j] = ""
+                                    currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
+                                    minEvaluation = min(minEvaluation, currentEvaluation)
+                                    beta: float = min(beta, currentEvaluation)
+                                    if beta <= alpha:
+                                        break
+
+                            case "kb":
+                                for k in BetterMoveByPiece.MoveKing("w", (i, j), board):
+                                    board[k[0]][k[1]] = board[i][j]
+                                    board[i][j] = ""
+                                    currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
+                                    minEvaluation = min(minEvaluation, currentEvaluation)
+                                    beta: float = min(beta, currentEvaluation)
+                                    if beta <= alpha:
+                                        break
 
                 return minEvaluation
 
 
         depth: int = self.heuristic.computeDepth(self.__getTurnNumber())
-        minimaxAlphaBeta(self, depth, float('-inf'), float('inf'))
+        minimaxAlphaBeta(self.board, depth, float('-inf'), float('inf'))
 
 
     
