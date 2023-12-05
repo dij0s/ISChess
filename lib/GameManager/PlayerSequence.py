@@ -54,6 +54,7 @@ class PlayerSequence(object):
         self.numberOfPlayers = len(sequence) // self.__TEAM_STRING_LENGTH
         self.teamsId: dict[chr, int] = self.__getTeams(sequence)
         self.teamsBoardRotation: dict[chr, int] = self.__getBoardsRotation(sequence)
+        self.ownTeamColor: chr = sequence[self.__TEAM_STRING_COLOR_INDEX]
         self.__teamsIterator = self.__iter__()
 
     def __iter__(self):

@@ -17,12 +17,12 @@ class TimeScalingHeuristic(Heuristic):
         # maybe use the sys.maxsize ?
 
         self.__WEIGHTS: dict[chr, float] = {
-            'p': (lambda turn: 1.0 + np.exp(turn / 8)),
+            'p': (lambda turn: 1.0 * np.exp(turn / 8)),
             'r': (lambda _: 5.0),
             'n': (lambda _: 3.0),
             'b': (lambda _: 3.0),
-            'q': (lambda turn: 9.0 + np.exp(turn / 6)),
-            'k': (lambda _: 1e10)
+            'q': (lambda turn: 9.0 * np.exp(turn / 6)),
+            'k': (lambda _: 1e3)
         }
 
         self.__BASE_DEPTH_: int = 4
@@ -36,7 +36,11 @@ class TimeScalingHeuristic(Heuristic):
 
         # get values of the weights
         # at the argument given turn
+
+        # MAYBE HANDLE DIFFERENTLY
         currentWeights: list[float] = list(map(lambda w: w(turn), self.__WEIGHTS.values()))
-        depth: int = self.__BASE_DEPTH_ + round(np.log(2 * np.var(currentWeights)))
+      
+        # depth: int = self.__BASE_DEPTH_ + round(np.log(2 * np.var(currentWeights)))
+        depth: int = self.__BASE_DEPTH_
 
         return depth

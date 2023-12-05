@@ -7,7 +7,6 @@ def MoveKing(color, pos, board):
                 moves.append(newPos)
     return moves
 
-
 def MoveQueen(color, pos, board):
     moves = []
     for i in MoveBishop(color, pos, board):
@@ -69,7 +68,6 @@ def MoveKnight(color, pos, board):
         if legalMove(color, [pos[0] + i[1], pos[1] + i[0]], board):
             moves.append([pos[0] + i[1], pos[1] + i[0]])
     return moves
-
 
 def MoveBishop(color, pos, board):
     moves = []
@@ -139,7 +137,6 @@ def MovePawn(color, pos, board):
             if board[pos[0] - 1][pos[1] - 1] != color and board[pos[0] - 1][pos[1] - 1] != "":
                 moves.append([pos[0] - 1, pos[1] - 1])
     return moves
-
 
 def legalMove(color, pos, board):
     if 7 >= pos[0] >= 0 and 7 >= pos[1] >= 0:

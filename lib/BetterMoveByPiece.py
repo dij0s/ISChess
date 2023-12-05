@@ -1,5 +1,4 @@
 import numpy as np
-from lib.Board import Board
 
 def MoveKing(color: chr, pos: tuple[int,int], board: np.ndarray):
     for i in range(-1, 2, 1):
@@ -120,6 +119,14 @@ def MovePawn(color: chr, pos: tuple[int, int], board: np.ndarray):
         if board[pos[0] - 1][pos[1] - 1] != color and board[pos[0] - 1][pos[1] - 1] != "":
             yield [pos[0] - 1, pos[1] - 1]
 
+pieceMovement: dict = {
+    'p': MovePawn,
+    'r': MoveRook,
+    'n': MoveKnight,
+    'b': MoveBishop,
+    'q': MoveQueen,
+    'k': MoveKing
+}
 
 def legalMove(color: chr, pos: tuple[int, int], board: np.ndarray) -> bool:
     size: tuple[int, int] = board.shape

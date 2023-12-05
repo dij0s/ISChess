@@ -9,6 +9,8 @@ from lib.GameManager import *
 from lib.Board import Board
 from lib.Heuristic.TimeScalingHeuristic import TimeScalingHeuristic
 
+from lib import BetterMoveByPiece
+
 def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwargs):   
 
     timer: Timer = Timer()
@@ -17,7 +19,8 @@ def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwarg
     heuristic: TimeScalingHeuristic = TimeScalingHeuristic()
    
     currentBoard: Board = Board(board, playerSequence, heuristic)
-    print(currentBoard.getTurnNumber())
+    print(currentBoard.computeNextMove())
+    print("done")
 
     return (1,0), (2,0)
 
