@@ -110,27 +110,15 @@ def MoveBishop(color: chr, pos: tuple[int, int], board: np.ndarray):
 
 
 def MovePawn(color: chr, pos: tuple[int, int], board: np.ndarray):
-    if color == "b":        #Color check for temporary tests, rotate board acording to player?
-        if legalMove(color, (pos[0] + 1,pos[1]), board):
-            if board[pos[0] + 1][pos[1]] == "":
-                yield [pos[0] + 1, pos[1]]
-        if legalMove(color, (pos[0] + 1,pos[1] + 1), board):
-            if board[pos[0] + 1][pos[1] + 1] != color and board[pos[0] + 1][pos[1] + 1] != "":
-                yield [pos[0] + 1, pos[1] + 1]
-        if legalMove(color, (pos[0] + 1, pos[1] - 1), board):
-            if board[pos[0] + 1][pos[1] - 1] != color and board[pos[0] + 1][pos[1] - 1] != "":
-                yield [pos[0] + 1, pos[1] - 1]
-
-    if color == "w":
-        if legalMove(color, (pos[0] - 1,pos[1]), board):
-            if board[pos[0] - 1][pos[1]] == "":
-                yield [pos[0] - 1, pos[1]]
-        if legalMove(color, (pos[0] - 1,pos[1] + 1), board):
-            if board[pos[0] - 1][pos[1] + 1] != color and board[pos[0] - 1][pos[1] + 1] != "":
-                yield [pos[0] - 1, pos[1] + 1]
-        if legalMove(color, (pos[0] - 1, pos[1] - 1), board):
-            if board[pos[0] - 1][pos[1] - 1] != color and board[pos[0] - 1][pos[1] - 1] != "":
-                yield [pos[0] - 1, pos[1] - 1]
+    if legalMove(color, (pos[0] - 1,pos[1]), board):
+        if board[pos[0] - 1][pos[1]] == "":
+            yield [pos[0] - 1, pos[1]]
+    if legalMove(color, (pos[0] - 1,pos[1] + 1), board):
+        if board[pos[0] - 1][pos[1] + 1] != color and board[pos[0] - 1][pos[1] + 1] != "":
+            yield [pos[0] - 1, pos[1] + 1]
+    if legalMove(color, (pos[0] - 1, pos[1] - 1), board):
+        if board[pos[0] - 1][pos[1] - 1] != color and board[pos[0] - 1][pos[1] - 1] != "":
+            yield [pos[0] - 1, pos[1] - 1]
 
 
 def legalMove(color: chr, pos: tuple[int, int], board: np.ndarray) -> bool:
