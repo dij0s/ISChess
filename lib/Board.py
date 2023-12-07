@@ -132,7 +132,7 @@ class Board:
             # check if we shall maximize for given
             # player or actually minimize
             currentColor: chr = next(self.playerSequence)
-            print(currentColor)
+            print(alpha, beta)
             isMaximizing: bool = True if currentColor is self.playerSequence.ownTeamColor else False
             # shall check for game over too
             # maybe define a function that
@@ -147,11 +147,16 @@ class Board:
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
                    
                     for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
+                        savedPiece = board[move[0]][move[1]]
+                        
                         board[move[0]][move[1]] = board[i][j]
                         board[i][j] = ""
 
                         currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
                         
+                        board[i][j] = board[move[0]][move[1]]
+                        board[move[0]][move[1]] = savedPiece
+
                         maxEvaluation = max(maxEvaluation, currentEvaluation)
                         alpha: float = max(alpha, currentEvaluation)
                         
@@ -167,11 +172,16 @@ class Board:
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
                     
                     for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
+                        savedPiece = board[move[0]][move[1]]
+
                         board[move[0]][move[1]] = board[i][j]
                         board[i][j] = ""
 
                         currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
                         
+                        board[i][j] = board[move[0]][move[1]]
+                        board[move[0]][move[1]] = savedPiece
+
                         minEvaluation = min(minEvaluation, currentEvaluation)
                         beta: float = min(beta, currentEvaluation)
                         
@@ -182,5 +192,4 @@ class Board:
 
 
         depth: int = self.computeDepth(self.__getTurnNumber())
-        print(depth)
         return minimaxAlphaBeta(self.board, depth, float('-inf'), float('inf'))
