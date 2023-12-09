@@ -30,7 +30,7 @@ class PlayerSequence(object):
     
     def __getBoardsRotation(self, sequence: str) -> dict[chr, int]:
         boardsRotation: dict[chr, int] = {}
-        boardColorRotationMapping = lambda rotationIndex: -(int(rotationIndex) - 2)
+        boardColorRotationMapping = lambda rotationIndex: -(int(rotationIndex) - self.numberOfPlayers)
 
         for relativeIndex in range(self.numberOfPlayers):
             absoluteIndex: int = relativeIndex * self.__TEAM_STRING_LENGTH

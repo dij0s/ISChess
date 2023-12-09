@@ -132,13 +132,16 @@ class Board:
             isMaximizing: bool = True if currentColor is self.playerSequence.ownTeamColor else False
 
             # rotate the board for given player
-            if isRoot:
-                board = Board.rotateBoard(board, self.playerSequence.teamsBoardRotation[currentColor])
-                print(currentColor, board)
-            else:
-                board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
+            # if isRoot:
+            #     board = Board.rotateBoard(board, self.playerSequence.teamsBoardRotation[currentColor])
+            #     print(currentColor, board)
+            # else:
+            #     board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
 
-            print(f"{currentColor} -> {board}") if depth == 3 else None
+            if isRoot:
+                board = Board.rotateBoard(board, 2)
+
+            print(f"{currentColor} -> {board}")
 
             # shall check for game over too
             # maybe define a function that
@@ -152,15 +155,23 @@ class Board:
                 for pieceType in self.getPiecesByWeight(currentColor):
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
                    
-                    for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
+                    for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), board):
                         # save position of further move
                         savedPiece = board[move[0]][move[1]]
                         
                         board[move[0]][move[1]] = board[i][j]
                         board[i][j] = ""
 
+                        board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
+
                         currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta, bestMove)
                         
+                        # must revert rotation ?
+                        # to the single move rotation
+                        # while handling how many players
+                        # are actually playing
+                        board = Board.rotateBoard(board, -self.playerSequence.rotationPerPlay * (self.playerSequence.numberOfPlayers - 1))
+
                         # restore position of move
                         board[i][j] = board[move[0]][move[1]]
                         board[move[0]][move[1]] = savedPiece
@@ -182,13 +193,17 @@ class Board:
                 for pieceType in self.getPiecesByWeight(currentColor):
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
                     
-                    for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
+                    for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), board):
                         savedPiece = board[move[0]][move[1]]
 
                         board[move[0]][move[1]] = board[i][j]
                         board[i][j] = ""
-
+                        
+                        board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
+                        
                         currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta, bestMove)
+                        
+                        board = Board.rotateBoard(board, -self.playerSequence.rotationPerPlay  * (self.playerSequence.numberOfPlayers - 1))
                         
                         board[i][j] = board[move[0]][move[1]]
                         board[move[0]][move[1]] = savedPiece
