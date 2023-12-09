@@ -30,6 +30,7 @@ class PlayerSequence(object):
     
     def __getBoardsRotation(self, sequence: str) -> dict[chr, int]:
         boardsRotation: dict[chr, int] = {}
+        boardColorRotationMapping = lambda rotationIndex: -(int(rotationIndex) - 2)
 
         for relativeIndex in range(self.numberOfPlayers):
             absoluteIndex: int = relativeIndex * self.__TEAM_STRING_LENGTH
@@ -37,7 +38,7 @@ class PlayerSequence(object):
             currentTeamSequence: str = sequence[absoluteIndex : absoluteIndex + self.numberOfPlayers + 1]
             boardsRotation.update({
                 currentTeamSequence[self.__TEAM_STRING_COLOR_INDEX]:
-                currentTeamSequence[self.__TEAM_STRING_ROTATION_INDEX]
+                boardColorRotationMapping(currentTeamSequence[self.__TEAM_STRING_ROTATION_INDEX])
             })
 
         return boardsRotation
@@ -51,7 +52,8 @@ class PlayerSequence(object):
     def __init__(self, sequence: str, *args, **kwargs) -> None:
         super().__init__(*args, *kwargs)
 
-        self.numberOfPlayers = len(sequence) // self.__TEAM_STRING_LENGTH
+        self.numberOfPlayers: int = len(sequence) // self.__TEAM_STRING_LENGTH
+        self.rotationPerPlay: int = (360 // self.numberOfPlayers) // 90
         self.teamsId: dict[chr, int] = self.__getTeams(sequence)
         self.teamsBoardRotation: dict[chr, int] = self.__getBoardsRotation(sequence)
         self.ownTeamColor: chr = sequence[self.__TEAM_STRING_COLOR_INDEX]

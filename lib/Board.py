@@ -106,34 +106,40 @@ class Board:
 
         return evaluation
 
-    def rotateBoard(self, nbrRot:int = 2) -> np.ndarray:
+    def rotateBoard(boardIn: np.ndarray, nbrRot: int = 2) -> np.ndarray:
         """
         Function used to rotate the board for easier opponent simulation.
         The argument nbrRot define how many 90 degrees rotation will be
         performed. (default: 2, 180 degrees)
         """
 
-        # implement by making use of the fact
-        # that we can get the board rotation
-        # from the PlayerSequence object
-
-        return np.rot90(self.board, k=nbrRot, axes=(0, 1))
+        return np.rot90(boardIn, k=nbrRot, axes=(0, 1))
     
-    def computeNextMove(self) -> float:
+    def computeNextMove(self) -> list[tuple[int, int]]:
         """
         This function returns the following move that shall
         be played based on a minimax alpha beta algorithm.
         """
 
-        def minimaxAlphaBeta(board: np.ndarray, depth: int, alpha: float, beta: float) -> float:
+        def minimaxAlphaBeta(board: np.ndarray, depth: int, alpha: float, beta: float, bestMove: list, isRoot: bool = False) -> float:
             """
             Helper function used to actually compute the next move, recursively.
             """
-            # check if we shall maximize for given
-            # player or actually minimize
+            
+            # check if we shall maximize for
+            # given player or minimize
             currentColor: chr = next(self.playerSequence)
-            print(alpha, beta)
             isMaximizing: bool = True if currentColor is self.playerSequence.ownTeamColor else False
+
+            # rotate the board for given player
+            if isRoot:
+                board = Board.rotateBoard(board, self.playerSequence.teamsBoardRotation[currentColor])
+                print(currentColor, board)
+            else:
+                board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
+
+            print(f"{currentColor} -> {board}") if depth == 3 else None
+
             # shall check for game over too
             # maybe define a function that
             # checks that
@@ -147,18 +153,23 @@ class Board:
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
                    
                     for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
+                        # save position of further move
                         savedPiece = board[move[0]][move[1]]
                         
                         board[move[0]][move[1]] = board[i][j]
                         board[i][j] = ""
 
-                        currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
+                        currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta, bestMove)
                         
+                        # restore position of move
                         board[i][j] = board[move[0]][move[1]]
                         board[move[0]][move[1]] = savedPiece
 
                         maxEvaluation = max(maxEvaluation, currentEvaluation)
                         alpha: float = max(alpha, currentEvaluation)
+                        
+                        if isRoot and maxEvaluation == currentEvaluation:
+                            bestMove.append([(i,j), (move[0], move[1])])
                         
                         if beta <= alpha:
                             break
@@ -177,7 +188,7 @@ class Board:
                         board[move[0]][move[1]] = board[i][j]
                         board[i][j] = ""
 
-                        currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta)
+                        currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta, bestMove)
                         
                         board[i][j] = board[move[0]][move[1]]
                         board[move[0]][move[1]] = savedPiece
@@ -190,6 +201,11 @@ class Board:
 
                 return minEvaluation
 
-
         depth: int = self.computeDepth(self.__getTurnNumber())
-        return minimaxAlphaBeta(self.board, depth, float('-inf'), float('inf'))
+
+        bestMoveWrapper: list = []
+        minimaxAlphaBeta(self.board, depth, float('-inf'), float('inf'), bestMoveWrapper, True)
+
+        randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
+
+        return bestMoveWrapper[randomMoveIndex]

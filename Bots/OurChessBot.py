@@ -1,26 +1,24 @@
 from PyQt6 import QtCore
 from Bots.ChessBotList import register_chess_bot
 
-import time
-
 # can resolving import cause
 # an extra time ? idk
 from lib.GameManager import *
 from lib.Board import Board
 from lib.Heuristic.TimeScalingHeuristic import TimeScalingHeuristic
-
-from lib import BetterMoveByPiece
+from lib.Heuristic.ConstantHeuristic import ConstantHeuristic
 
 def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwargs):   
 
     timer: Timer = Timer()
 
     playerSequence: PlayerSequence = PlayerSequence(player_sequence)
-    heuristic: TimeScalingHeuristic = TimeScalingHeuristic()
+    # heuristic: TimeScalingHeuristic = TimeScalingHeuristic()
+    heuristic: ConstantHeuristic = ConstantHeuristic()
    
     currentBoard: Board = Board(board, playerSequence, heuristic)
-    print(currentBoard.computeNextMove())
+    bestMove: list[tuple[int, int]] = currentBoard.computeNextMove()
 
-    return (1,0), (2,0)
+    return bestMove
 
 register_chess_bot("BOGO$$ OVERDOSE", chess_bot)
