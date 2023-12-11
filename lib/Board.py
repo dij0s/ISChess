@@ -81,8 +81,12 @@ class Board:
         """
 
         return np.copy(self.board)
+    
+    def setBoard(self, board: np.ndarray) -> None:
+        self.board = board
+        self.__piecesByColor = self.__getPiecesByColor()
 
-    def computeEvaluation(self, boardIn: np.ndarray) -> float:
+    def computeEvaluation(self) -> float:
         """
         Returns the computed evaluation of the current board
         based on the defined heuristic.
@@ -96,7 +100,7 @@ class Board:
 
         evaluation: float = 0
 
-        for row in boardIn:
+        for row in self.board:
             for piece in row:
                 if piece != '' and piece != 'X':
                     # get our color in sequence
@@ -106,14 +110,14 @@ class Board:
 
         return evaluation
 
-    def rotateBoard(boardIn: np.ndarray, nbrRot: int = 2) -> np.ndarray:
+    def rotateBoard(self, nbrRot: int = 2) -> np.ndarray:
         """
         Function used to rotate the board for easier opponent simulation.
         The argument nbrRot define how many 90 degrees rotation will be
         performed. (default: 2, 180 degrees)
         """
 
-        return np.rot90(boardIn, k=nbrRot, axes=(0, 1))
+        return np.rot90(self.board, k=nbrRot, axes=(0, 1))
     
     def computeNextMove(self) -> list[tuple[int, int]]:
         """
@@ -121,7 +125,7 @@ class Board:
         be played based on a minimax alpha beta algorithm.
         """
 
-        def minimaxAlphaBeta(board: np.ndarray, depth: int, alpha: float, beta: float, bestMove: list, isRoot: bool = False) -> float:
+        def minimaxAlphaBeta(depth: int, alpha: float, beta: float, bestMove: list, isRoot: bool = False) -> float:
             """
             Helper function used to actually compute the next move, recursively.
             """
@@ -138,43 +142,47 @@ class Board:
             # else:
             #     board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
 
-            if isRoot:
-                board = Board.rotateBoard(board, 2)
 
-            print(f"{currentColor} -> {board}")
+            self.setBoard(np.copy(self.rotateBoard(self.playerSequence.rotationPerPlay)))
+
 
             # shall check for game over too
             # maybe define a function that
             # checks that
             if depth == 0:
-                return self.computeEvaluation(board)
+                return self.computeEvaluation()
 
             if isMaximizing:
                 maxEvaluation: float = float('-inf')
 
                 for pieceType in self.getPiecesByWeight(currentColor):
+                    if depth >= 3:
+                        print(f"{currentColor} -> {self.board}")
+                        asd = self.board
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
-                   
-                    for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), board):
+
+                    for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
                         # save position of further move
-                        savedPiece = board[move[0]][move[1]]
+                        savedPiece = self.board[move[0]][move[1]]
                         
-                        board[move[0]][move[1]] = board[i][j]
-                        board[i][j] = ""
+                        self.board[move[0]][move[1]] = self.board[i][j]
+                        self.board[i][j] = ""
 
-                        board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
+                        #board = np.copy(Board.rotateBoard(board, self.playerSequence.rotationPerPlay))
 
-                        currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta, bestMove)
+
+                        currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
                         
                         # must revert rotation ?
                         # to the single move rotation
                         # while handling how many players
                         # are actually playing
-                        board = Board.rotateBoard(board, -self.playerSequence.rotationPerPlay * (self.playerSequence.numberOfPlayers - 1))
+                        # board = np.copy(Board.rotateBoard(board, -self.playerSequence.rotationPerPlay * (self.playerSequence.numberOfPlayers - 1)))
+
 
                         # restore position of move
-                        board[i][j] = board[move[0]][move[1]]
-                        board[move[0]][move[1]] = savedPiece
+                        self.board[i][j] = self.board[move[0]][move[1]]
+                        self.board[move[0]][move[1]] = savedPiece
 
                         maxEvaluation = max(maxEvaluation, currentEvaluation)
                         alpha: float = max(alpha, currentEvaluation)
@@ -193,20 +201,22 @@ class Board:
                 for pieceType in self.getPiecesByWeight(currentColor):
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
                     
-                    for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), board):
-                        savedPiece = board[move[0]][move[1]]
+                    for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
+                        savedPiece = self.board[move[0]][move[1]]
 
-                        board[move[0]][move[1]] = board[i][j]
-                        board[i][j] = ""
+                        self.board[move[0]][move[1]] = self.board[i][j]
+                        self.board[i][j] = ""
                         
-                        board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
+                        # board = np.copy(Board.rotateBoard(board, self.playerSequence.rotationPerPlay))
+
                         
-                        currentEvaluation: float = minimaxAlphaBeta(board, depth - 1, alpha, beta, bestMove)
+                        currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
                         
-                        board = Board.rotateBoard(board, -self.playerSequence.rotationPerPlay  * (self.playerSequence.numberOfPlayers - 1))
+                        # board = np.copy(Board.rotateBoard(board, -self.playerSequence.rotationPerPlay  * (self.playerSequence.numberOfPlayers - 1)))
+
                         
-                        board[i][j] = board[move[0]][move[1]]
-                        board[move[0]][move[1]] = savedPiece
+                        self.board[i][j] = self.board[move[0]][move[1]]
+                        self.board[move[0]][move[1]] = savedPiece
 
                         minEvaluation = min(minEvaluation, currentEvaluation)
                         beta: float = min(beta, currentEvaluation)
@@ -219,7 +229,7 @@ class Board:
         depth: int = self.computeDepth(self.__getTurnNumber())
 
         bestMoveWrapper: list = []
-        minimaxAlphaBeta(self.board, depth, float('-inf'), float('inf'), bestMoveWrapper, True)
+        minimaxAlphaBeta(depth, float('-inf'), float('inf'), bestMoveWrapper, True)
 
         randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
 
