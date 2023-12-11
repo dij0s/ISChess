@@ -156,15 +156,14 @@ class Board:
                 maxEvaluation: float = float('-inf')
 
                 for pieceType in self.getPiecesByWeight(currentColor):
-                    if depth >= 3:
-                        print(f"{currentColor} -> {self.board}")
-                        asd = self.board
+
+                    # print(self.__piecesPosition[f"{pieceType}{currentColor}"])
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
 
                     for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
                         # save position of further move
                         savedPiece = self.board[move[0]][move[1]]
-                        
+
                         self.board[move[0]][move[1]] = self.board[i][j]
                         self.board[i][j] = ""
 
@@ -172,12 +171,12 @@ class Board:
 
 
                         currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
-                        
+
                         # must revert rotation ?
                         # to the single move rotation
                         # while handling how many players
                         # are actually playing
-                        # board = np.copy(Board.rotateBoard(board, -self.playerSequence.rotationPerPlay * (self.playerSequence.numberOfPlayers - 1)))
+                        self.setBoard(np.copy(self.rotateBoard(-self.playerSequence.rotationPerPlay * (self.playerSequence.numberOfPlayers - 1))))
 
 
                         # restore position of move
@@ -186,10 +185,11 @@ class Board:
 
                         maxEvaluation = max(maxEvaluation, currentEvaluation)
                         alpha: float = max(alpha, currentEvaluation)
-                        
+
                         if isRoot and maxEvaluation == currentEvaluation:
+                            print(f"{(i,j)} -> {maxEvaluation}")
                             bestMove.append([(i,j), (move[0], move[1])])
-                        
+
                         if beta <= alpha:
                             break
 
@@ -200,27 +200,27 @@ class Board:
 
                 for pieceType in self.getPiecesByWeight(currentColor):
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
-                    
+
                     for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
                         savedPiece = self.board[move[0]][move[1]]
 
                         self.board[move[0]][move[1]] = self.board[i][j]
                         self.board[i][j] = ""
-                        
+
                         # board = np.copy(Board.rotateBoard(board, self.playerSequence.rotationPerPlay))
 
-                        
-                        currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
-                        
-                        # board = np.copy(Board.rotateBoard(board, -self.playerSequence.rotationPerPlay  * (self.playerSequence.numberOfPlayers - 1)))
 
-                        
+                        currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
+
+                        self.setBoard(np.copy(self.rotateBoard(-self.playerSequence.rotationPerPlay  * (self.playerSequence.numberOfPlayers - 1))))
+
+
                         self.board[i][j] = self.board[move[0]][move[1]]
                         self.board[move[0]][move[1]] = savedPiece
 
                         minEvaluation = min(minEvaluation, currentEvaluation)
                         beta: float = min(beta, currentEvaluation)
-                        
+
                         if beta <= alpha:
                             break
 
@@ -231,6 +231,9 @@ class Board:
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('inf'), bestMoveWrapper, True)
 
-        randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
+        # randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
+        randomMoveIndex: int = -1
 
-        return bestMoveWrapper[randomMoveIndex]
+        out = [(7-bestMoveWrapper[randomMoveIndex][0][0],7-bestMoveWrapper[randomMoveIndex][0][1]), (7-bestMoveWrapper[randomMoveIndex][1][0],7-bestMoveWrapper[randomMoveIndex][1][1])]
+
+        return out
