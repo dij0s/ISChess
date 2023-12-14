@@ -86,6 +86,9 @@ class Board:
         self.board = board
         self.__piecesByColor = self.__getPiecesByColor()
 
+    def updateBoard(self) -> None:
+        self.__piecesByColor = self.__getPiecesByColor()
+
     def computeEvaluation(self) -> float:
         """
         Returns the computed evaluation of the current board
@@ -97,7 +100,6 @@ class Board:
         # represents a graph or do we actually
         # modify this board and then compute the
         # new evaluation ?
-
         evaluation: float = 0
 
         for row in self.board:
@@ -107,6 +109,10 @@ class Board:
                     sign: int = -1 if piece[self.__BOARD_PIECE_COLOR_INDEX] != self.playerSequence.ownTeamColor else 1
                     currentPiece: chr = piece[self.__BOARD_PIECE_TYPE_INDEX]
                     evaluation += sign * self.weights[currentPiece](self.__getTurnNumber())
+
+        if evaluation>=100:
+            print("Board in eval")
+            print(self.board)
 
         return evaluation
 
@@ -143,7 +149,7 @@ class Board:
             #     board = Board.rotateBoard(board, self.playerSequence.rotationPerPlay)
 
 
-            self.setBoard(np.copy(self.rotateBoard(self.playerSequence.rotationPerPlay)))
+            # self.setBoard(np.copy(self.rotateBoard(self.playerSequence.rotationPerPlay)))
 
 
             # shall check for game over too
@@ -176,7 +182,7 @@ class Board:
                         # to the single move rotation
                         # while handling how many players
                         # are actually playing
-                        self.setBoard(np.copy(self.rotateBoard(-self.playerSequence.rotationPerPlay * (self.playerSequence.numberOfPlayers - 1))))
+                        # self.setBoard(np.copy(self.rotateBoard(-self.playerSequence.rotationPerPlay * (self.playerSequence.numberOfPlayers - 1))))
 
 
                         # restore position of move
@@ -186,8 +192,11 @@ class Board:
                         maxEvaluation = max(maxEvaluation, currentEvaluation)
                         alpha: float = max(alpha, currentEvaluation)
 
+                        '''if maxEvaluation >= 100:
+                            print("Board in minimax")
+                            print(self.board)'''
+
                         if isRoot and maxEvaluation == currentEvaluation:
-                            print(f"{(i,j)} -> {maxEvaluation}")
                             bestMove.append([(i,j), (move[0], move[1])])
 
                         if beta <= alpha:
@@ -212,7 +221,7 @@ class Board:
 
                         currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
 
-                        self.setBoard(np.copy(self.rotateBoard(-self.playerSequence.rotationPerPlay  * (self.playerSequence.numberOfPlayers - 1))))
+                        # self.setBoard(np.copy(self.rotateBoard(-self.playerSequence.rotationPerPlay  * (self.playerSequence.numberOfPlayers - 1))))
 
 
                         self.board[i][j] = self.board[move[0]][move[1]]
@@ -231,9 +240,11 @@ class Board:
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('inf'), bestMoveWrapper, True)
 
-        # randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
-        randomMoveIndex: int = -1
+        randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
+        # randomMoveIndex: int = -1
 
-        out = [(7-bestMoveWrapper[randomMoveIndex][0][0],7-bestMoveWrapper[randomMoveIndex][0][1]), (7-bestMoveWrapper[randomMoveIndex][1][0],7-bestMoveWrapper[randomMoveIndex][1][1])]
+        print(bestMoveWrapper)
 
-        return out
+        # out = [(7-bestMoveWrapper[randomMoveIndex][0][0],7-bestMoveWrapper[randomMoveIndex][0][1]), (7-bestMoveWrapper[randomMoveIndex][1][0],7-bestMoveWrapper[randomMoveIndex][1][1])]
+
+        return bestMoveWrapper[randomMoveIndex]

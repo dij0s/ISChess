@@ -109,15 +109,27 @@ def MoveBishop(color: chr, pos: tuple[int, int], board: np.ndarray):
 
 
 def MovePawn(color: chr, pos: tuple[int, int], board: np.ndarray):
-    if legalMove(color, (pos[0] - 1,pos[1]), board):
-        if board[pos[0] - 1][pos[1]] == "":
-            yield [pos[0] - 1, pos[1]]
-    if legalMove(color, (pos[0] - 1,pos[1] + 1), board):
-        if board[pos[0] - 1][pos[1] + 1] != color and board[pos[0] - 1][pos[1] + 1] != "":
-            yield [pos[0] - 1, pos[1] + 1]
-    if legalMove(color, (pos[0] - 1, pos[1] - 1), board):
-        if board[pos[0] - 1][pos[1] - 1] != color and board[pos[0] - 1][pos[1] - 1] != "":
-            yield [pos[0] - 1, pos[1] - 1]
+    #Si on joue les noirs
+    if color == 'w':
+        if legalMove(color, (pos[0] - 1,pos[1]), board):
+            if board[pos[0] - 1][pos[1]] == "":
+                yield [pos[0] - 1, pos[1]]
+        if legalMove(color, (pos[0] - 1,pos[1] + 1), board):
+            if board[pos[0] - 1][pos[1] + 1] != color and board[pos[0] - 1][pos[1] + 1] != "":
+                yield [pos[0] - 1, pos[1] + 1]
+        if legalMove(color, (pos[0] - 1, pos[1] - 1), board):
+            if board[pos[0] - 1][pos[1] - 1] != color and board[pos[0] - 1][pos[1] - 1] != "":
+                yield [pos[0] - 1, pos[1] - 1]
+    elif color == 'b':
+        if legalMove(color, [pos[0] + 1, pos[1]], board):
+            if board[pos[0] + 1][pos[1]] == "":
+                yield [pos[0] + 1, pos[1]]
+        if legalMove(color, [pos[0] + 1, pos[1] + 1], board):
+            if board[pos[0] + 1][pos[1] + 1] != color and board[pos[0] + 1][pos[1] + 1] != "":
+                yield [pos[0] + 1, pos[1] + 1]
+        if legalMove(color, [pos[0] + 1, pos[1] - 1], board):
+            if board[pos[0] + 1][pos[1] - 1] != color and board[pos[0] + 1][pos[1] - 1] != "":
+                yield [pos[0] + 1, pos[1] - 1]
 
 pieceMovement: dict = {
     'p': MovePawn,
