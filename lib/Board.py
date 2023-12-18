@@ -155,7 +155,7 @@ class Board:
             # shall check for game over too
             # maybe define a function that
             # checks that
-            if depth == 0:
+            if depth == 0 or self.__piecesPosition[f"k{self.playerSequence.ownTeamColor}"] == ():
                 return self.computeEvaluation()
 
             if isMaximizing:
