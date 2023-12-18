@@ -3,6 +3,7 @@ import numpy as np
 from lib.GameManager.PlayerSequence import PlayerSequence
 from lib.Heuristic import Heuristic
 from lib import BetterMoveByPiece
+from lib.GameManager.Timer import Timer
 
 from collections import defaultdict
 
@@ -30,6 +31,8 @@ class Board:
         self.weights: dict[chr, float] = heuristic.getWeights()
         self.__piecesByColor: defaultdict[chr, list[str]] = self.__getPiecesByColor()
 
+        print(self.__piecesPosition["pw"])
+
     def __getPiecesByColor(self) -> defaultdict[chr, list[str]]:
         """
         Returns a dictionnary that maps the pieces
@@ -37,7 +40,7 @@ class Board:
         stores each piece position in a dict
         """
 
-        piecesByColor: defaultdict[chr, list[int]] = defaultdict(lambda: [])
+        piecesByColor: defaultdict[chr, list[str]] = defaultdict(lambda: [])
         piecesPosition: defaultdict[str, tuple(int, int)] = defaultdict(lambda: ())
 
         for i, row in enumerate(self.board):
@@ -110,9 +113,9 @@ class Board:
                     currentPiece: chr = piece[self.__BOARD_PIECE_TYPE_INDEX]
                     evaluation += sign * self.weights[currentPiece](self.__getTurnNumber())
 
-        if evaluation>=100:
+        '''if evaluation>=100:
             print("Board in eval")
-            print(self.board)
+            print(self.board)'''
 
         return evaluation
 
@@ -135,7 +138,8 @@ class Board:
             """
             Helper function used to actually compute the next move, recursively.
             """
-            
+            timer = Timer()
+            self.updateBoard()
             # check if we shall maximize for
             # given player or minimize
             currentColor: chr = next(self.playerSequence)
@@ -162,7 +166,7 @@ class Board:
                 maxEvaluation: float = float('-inf')
 
                 for pieceType in self.getPiecesByWeight(currentColor):
-
+                    # MANQUE LA POS DE TOUS LES PIONS!!!!!!!!!!!!!!
                     # print(self.__piecesPosition[f"{pieceType}{currentColor}"])
                     i, j = self.__piecesPosition[f"{pieceType}{currentColor}"]
 
@@ -197,6 +201,7 @@ class Board:
                             print(self.board)'''
 
                         if isRoot and maxEvaluation == currentEvaluation:
+                            print(timer.getElapsed())
                             bestMove.append([(i,j), (move[0], move[1])])
 
                         if beta <= alpha:
@@ -238,13 +243,19 @@ class Board:
         depth: int = self.computeDepth(self.__getTurnNumber())
 
         bestMoveWrapper: list = []
+        if self.playerSequence.ownTeamColor == 'w':
+            self.board = np.copy(self.rotateBoard())
         minimaxAlphaBeta(depth, float('-inf'), float('inf'), bestMoveWrapper, True)
 
-        randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
-        # randomMoveIndex: int = -1
+        # randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
+        randomMoveIndex: int = -1
 
+        if self.playerSequence.ownTeamColor == 'w':
+            out = [(7-bestMoveWrapper[randomMoveIndex][0][0],7-bestMoveWrapper[randomMoveIndex][0][1]), (7-bestMoveWrapper[randomMoveIndex][1][0],7-bestMoveWrapper[randomMoveIndex][1][1])]
+        else:
+            out = bestMoveWrapper[randomMoveIndex]
         print(bestMoveWrapper)
 
         # out = [(7-bestMoveWrapper[randomMoveIndex][0][0],7-bestMoveWrapper[randomMoveIndex][0][1]), (7-bestMoveWrapper[randomMoveIndex][1][0],7-bestMoveWrapper[randomMoveIndex][1][1])]
 
-        return bestMoveWrapper[randomMoveIndex]
+        return out
