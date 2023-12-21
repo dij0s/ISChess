@@ -12,10 +12,6 @@ class TimeScalingHeuristic(Heuristic):
     # Maybe compute in relation to max number of plays too ?
 
     def __init__(self):
-        # cannot make use of float('inf)
-        # as we can't compute the variance
-        # maybe use the sys.maxsize ?
-
         self.__WEIGHTS: dict[chr, float] = {
             'p': (lambda turn: 1.0 * np.exp(turn / 8)),
             'r': (lambda _: 5.0),
@@ -25,7 +21,7 @@ class TimeScalingHeuristic(Heuristic):
             'k': (lambda _: 1e3)
         }
 
-        self.__BASE_DEPTH_: int = 4
+        self.__BASE_DEPTH_: int = 2
 
     def getWeights(self) -> dict:
         return self.__WEIGHTS
