@@ -9,14 +9,18 @@ from collections import defaultdict
 
 class Board:
     __NUMBER_CREATED_BOARDS: int = 0
+    __BOARD_STATES_VISITED: int = 0
     
     __BOARD_PIECE_TYPE_INDEX: int = 0
     __BOARD_PIECE_COLOR_INDEX: int = 1
 
+    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.995
+
     def __init__(self,
                  board: list[list[str]],
                  playerSequence: PlayerSequence,
-                 heuristic: Heuristic):
+                 heuristic: Heuristic,
+                 timeBudget: float):
         """
         Initializes a Board object given a board: list[list[int]],
         a player sequence: PlayerSequence and a heuristic: Heuristic 
@@ -26,6 +30,7 @@ class Board:
         # maybe, at init, store all the pieces
         # of a given player in a hashmap..
         self.board: np.ndarray = np.array(board)
+        self.timeBudget = timeBudget
         self.playerSequence: PlayerSequence = playerSequence
         self.computeDepth = heuristic.computeDepth
         self.weights: dict[chr, float] = heuristic.getWeights()
@@ -120,15 +125,31 @@ class Board:
         be played based on a minimax alpha beta algorithm.
         """
 
+        timer: Timer = Timer()
+
         def minimaxAlphaBeta(depth: int, alpha: float, beta: float, bestMove: list, isRoot: bool = False) -> float:
             """
             Helper function used to actually compute the next move, recursively.
             """
 
+            Board.__BOARD_STATES_VISITED += 1
+
             # check if we shall maximize for
             # given player or minimize
             currentColor: chr = next(self.playerSequence)
             isMaximizing: bool = True if currentColor is self.playerSequence.ownTeamColor else False
+
+            isOvertime: bool = False
+
+            # incase of near time budget reached
+                        # we shall go back up in the decision tree
+            
+            if timer.getElapsed() >= self.timeBudget * self.__BOARD_TIME_ALLOWANCE_FACTOR:
+                print("GOING BACK UP")
+                isOvertime = True
+
+                return float('-inf') if isMaximizing else float('+inf')
+                # minimaxAlphaBeta(0, alpha, beta, bestMove)
 
             # shall check for game over too
             # maybe define a function that
@@ -156,6 +177,9 @@ class Board:
                         self.__piecesByColor[currentColor].append(f"{piece[0:2]}{move[0]}{move[1]}")
 
                         currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
+
+                        if isOvertime:
+                            return float('-inf')
 
                         # restore position of move
                         self.board[i][j] = self.board[move[0]][move[1]]
@@ -200,6 +224,9 @@ class Board:
 
                         currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
 
+                        if isOvertime:
+                            return float('+inf')
+
                         # restore position of move
                         self.board[i][j] = self.board[move[0]][move[1]]
                         self.board[move[0]][move[1]] = savedPiece
@@ -217,14 +244,17 @@ class Board:
 
         depth: int = self.computeDepth(self.__getTurnNumber())
 
+
         bestMoveWrapper: list = []
         if self.playerSequence.ownTeamColor == 'w':
             self.board = np.copy(self.rotateBoard())
 
-        minimaxAlphaBeta(depth, float('-inf'), float('inf'), bestMoveWrapper, True)
+        minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
+
+        print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated to compute the following move.")
 
         # randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
-        randomMoveIndex: int = 0
+        randomMoveIndex: int = -1
 
         if self.playerSequence.ownTeamColor == 'w':
             # this parsing under here doesn't seem to work
