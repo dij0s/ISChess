@@ -224,9 +224,11 @@ class Board:
         minimaxAlphaBeta(depth, float('-inf'), float('inf'), bestMoveWrapper, True)
 
         # randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
-        randomMoveIndex: int = -1
+        randomMoveIndex: int = 0
 
         if self.playerSequence.ownTeamColor == 'w':
+            # this parsing under here doesn't seem to work
+            
             out = [(7-bestMoveWrapper[randomMoveIndex][0][0],7-bestMoveWrapper[randomMoveIndex][0][1]), (7-bestMoveWrapper[randomMoveIndex][1][0],7-bestMoveWrapper[randomMoveIndex][1][1])]
         else:
             out = bestMoveWrapper[randomMoveIndex]

@@ -13,7 +13,7 @@ class TimeScalingHeuristic(Heuristic):
 
     def __init__(self):
         self.__WEIGHTS: dict[chr, float] = {
-            'p': (lambda turn: 1.0 * np.exp(turn / 8)),
+            'p': (lambda turn: 1.0 * np.exp(turn / 7.5)),
             'r': (lambda _: 5.0),
             'n': (lambda _: 3.0),
             'b': (lambda _: 3.0),
@@ -22,6 +22,7 @@ class TimeScalingHeuristic(Heuristic):
         }
 
         self.__BASE_DEPTH_: int = 2
+        self.__BASE_STANDARD_DEVIATION: float = np.std(list(map(lambda w: w(0), self.__WEIGHTS.values())))
 
     def getWeights(self) -> dict:
         return self.__WEIGHTS
@@ -36,7 +37,7 @@ class TimeScalingHeuristic(Heuristic):
         # MAYBE HANDLE DIFFERENTLY
         currentWeights: list[float] = list(map(lambda w: w(turn), self.__WEIGHTS.values()))
       
-        # depth: int = self.__BASE_DEPTH_ + round(np.log(2 * np.var(currentWeights)))
-        depth: int = self.__BASE_DEPTH_
+        depth: int = self.__BASE_DEPTH_ + round(np.log(np.std(currentWeights) / self.__BASE_STANDARD_DEVIATION))
+        # depth: int = self.__BASE_DEPTH_
 
         return depth
