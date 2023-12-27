@@ -246,9 +246,6 @@ class Board:
 
 
         bestMoveWrapper: list = []
-        if self.playerSequence.ownTeamColor == 'w':
-            self.board = np.copy(self.rotateBoard())
-
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
 
         print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated to compute the following move.")
@@ -256,14 +253,7 @@ class Board:
         # randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
         randomMoveIndex: int = -1
 
-        if self.playerSequence.ownTeamColor == 'w':
-            # this parsing under here doesn't seem to work
-            
-            out = [(7-bestMoveWrapper[randomMoveIndex][0][0],7-bestMoveWrapper[randomMoveIndex][0][1]), (7-bestMoveWrapper[randomMoveIndex][1][0],7-bestMoveWrapper[randomMoveIndex][1][1])]
-        else:
-            out = bestMoveWrapper[randomMoveIndex]
+        out = bestMoveWrapper[randomMoveIndex]
         print(bestMoveWrapper)
-
-        # out = [(7-bestMoveWrapper[randomMoveIndex][0][0],7-bestMoveWrapper[randomMoveIndex][0][1]), (7-bestMoveWrapper[randomMoveIndex][1][0],7-bestMoveWrapper[randomMoveIndex][1][1])]
 
         return out

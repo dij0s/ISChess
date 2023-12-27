@@ -18,7 +18,7 @@ class ConstantHeuristic(Heuristic):
             'q': (lambda _: 9.0),
             'k': (lambda _: 1e3)
         }
-        self.__BASE_DEPTH_: int = 4
+        self.__BASE_DEPTH_: int = 3
 
     def getWeights(self) -> dict:
         return self.__WEIGHTS
