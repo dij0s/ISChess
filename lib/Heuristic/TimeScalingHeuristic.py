@@ -28,16 +28,13 @@ class TimeScalingHeuristic(Heuristic):
         return self.__WEIGHTS
         
     def computeDepth(self, turn: int) -> int:
-        # must compute based on variance
-        # at given round
+        # must compute based on standard
+        # deviation at given turn
 
         # get values of the weights
         # at the argument given turn
-
-        # MAYBE HANDLE DIFFERENTLY
         currentWeights: list[float] = list(map(lambda w: w(turn), self.__WEIGHTS.values()))
       
         depth: int = self.__BASE_DEPTH_ + round(np.log(np.std(currentWeights) / self.__BASE_STANDARD_DEVIATION))
-        # depth: int = self.__BASE_DEPTH_
 
         return depth

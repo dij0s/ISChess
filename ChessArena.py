@@ -152,7 +152,7 @@ class ChessArena(QtWidgets.QWidget):
             self.add_system_message("# ",COLOR_NAMES[winner]," won the match")
 
     def select_and_load_board(self):
-        path = QtWidgets.QFileDialog.getOpenFileName(self, "Select board", "C:\\Users\\Louis\\Desktop\\ISChess\\Data\\maps", "Board File (*.brd)")
+        path = QtWidgets.QFileDialog.getOpenFileName(self, "Select board", "./", "Board File (*.brd)")
 
         if path is None:
             return

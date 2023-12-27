@@ -9,12 +9,11 @@ from collections import defaultdict
 
 class Board:
     __NUMBER_CREATED_BOARDS: int = 0
-    __BOARD_STATES_VISITED: int = 0
     
     __BOARD_PIECE_TYPE_INDEX: int = 0
     __BOARD_PIECE_COLOR_INDEX: int = 1
 
-    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.995
+    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.95
 
     def __init__(self,
                  board: list[list[str]],
@@ -27,6 +26,7 @@ class Board:
         """
 
         Board.__NUMBER_CREATED_BOARDS += 1
+        Board.__BOARD_STATES_VISITED = 0
         # maybe, at init, store all the pieces
         # of a given player in a hashmap..
         self.board: np.ndarray = np.array(board)
@@ -65,8 +65,8 @@ class Board:
         sorted by their respective heuristical value
         """
 
-        # yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()))
         yield from self.__piecesByColor[color]
+        # yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()))
 
     def __getTurnNumber(self) -> int:
         """
@@ -89,8 +89,14 @@ class Board:
 
         return np.copy(self.board)
     
-    def updateBoard(self) -> None:
-        self.__piecesByColor = self.__getPiecesByColor()
+    def isGameOver(self) -> bool:
+        """
+        Returns True if the board's main color player king still is present.
+
+        Improves pruning when computing a move.
+        """
+
+        return f"k{self.playerSequence.ownTeamColor}" not in map(lambda piece: piece[self.__BOARD_PIECE_TYPE_INDEX:self.__BOARD_PIECE_COLOR_INDEX+1], self.__piecesByColor[self.playerSequence.ownTeamColor])
 
     def computeEvaluation(self) -> float:
         """
@@ -102,7 +108,7 @@ class Board:
 
         for row in self.board:
             for piece in row:
-                if piece != '' and piece != 'X':
+                if piece != '' and piece != 'XX':
                     # get our color in sequence
                     sign: int = -1 if piece[self.__BOARD_PIECE_COLOR_INDEX] != self.playerSequence.ownTeamColor else 1
                     currentPiece: chr = piece[self.__BOARD_PIECE_TYPE_INDEX]
@@ -131,7 +137,10 @@ class Board:
             """
             Helper function used to actually compute the next move, recursively.
             """
-
+            
+            # tracks and counts the total
+            # recursion calls made in a single
+            # move computation
             Board.__BOARD_STATES_VISITED += 1
 
             # check if we shall maximize for
@@ -142,19 +151,19 @@ class Board:
             isOvertime: bool = False
 
             # incase of near time budget reached
-                        # we shall go back up in the decision tree
-            
+            # we shall go back up in the decision tree
             if timer.getElapsed() >= self.timeBudget * self.__BOARD_TIME_ALLOWANCE_FACTOR:
-                print("GOING BACK UP")
+                print("Overtime -> the ongoing branches are pruned.")
                 isOvertime = True
-
+                
+                # incase of time budget reach
+                # shall return a case that gets
+                # pruned by the decision tree
+                # depending on the current's node
+                # max/min-imizing goal
                 return float('-inf') if isMaximizing else float('+inf')
-                # minimaxAlphaBeta(0, alpha, beta, bestMove)
 
-            # shall check for game over too
-            # maybe define a function that
-            # checks that
-            if depth == 0:
+            if depth == 0 or self.isGameOver():
                 return self.computeEvaluation()
 
             if isMaximizing:
@@ -244,16 +253,12 @@ class Board:
 
         depth: int = self.computeDepth(self.__getTurnNumber())
 
-
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
 
-        print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated to compute the following move.")
+        print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
 
-        # randomMoveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
-        randomMoveIndex: int = -1
+        # moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
+        moveIndex: int = -1
 
-        out = bestMoveWrapper[randomMoveIndex]
-        print(bestMoveWrapper)
-
-        return out
+        return bestMoveWrapper[moveIndex]
