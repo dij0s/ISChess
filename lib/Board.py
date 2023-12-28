@@ -13,7 +13,7 @@ class Board:
     __BOARD_PIECE_TYPE_INDEX: int = 0
     __BOARD_PIECE_COLOR_INDEX: int = 1
 
-    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.95
+    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.92
 
     def __init__(self,
                  board: list[list[str]],
@@ -57,16 +57,16 @@ class Board:
                     piecesByColor[currentColor].append(pieceIdentifier)
 
         return piecesByColor
-
-    
+   
     def getPiecesByWeight(self, color: chr):
         """
         Yields the pieces on board for argument-given color
         sorted by their respective heuristical value
         """
 
-        yield from self.__piecesByColor[color]
-        # yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()))
+        # yield from self.__piecesByColor[color]
+        yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()))
+        # yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()), reverse=True)
 
     def __getTurnNumber(self) -> int:
         """
