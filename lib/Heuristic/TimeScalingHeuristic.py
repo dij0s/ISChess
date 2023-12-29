@@ -34,7 +34,8 @@ class TimeScalingHeuristic(Heuristic):
         # get values of the weights
         # at the argument given turn
         currentWeights: list[float] = list(map(lambda w: w(turn), self.__WEIGHTS.values()))
-      
+
         depth: int = self.__BASE_DEPTH_ + round(np.log(np.std(currentWeights) / self.__BASE_STANDARD_DEVIATION))
+        # depth: int = self.__BASE_DEPTH_
 
         return depth
