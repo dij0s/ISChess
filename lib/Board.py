@@ -1,11 +1,10 @@
 import numpy as np
+from collections import defaultdict
 
 from lib.GameManager.PlayerSequence import PlayerSequence
 from lib.Heuristic import Heuristic
 from lib import BetterMoveByPiece
 from lib.GameManager.Timer import Timer
-
-from collections import defaultdict
 
 class Board:
     __NUMBER_CREATED_BOARDS: int = 0
@@ -24,11 +23,10 @@ class Board:
         Initializes a Board object given a board: list[list[int]],
         a player sequence: PlayerSequence and a heuristic: Heuristic 
         """
-
         Board.__NUMBER_CREATED_BOARDS += 1
+
         Board.__BOARD_STATES_VISITED = 0
-        # maybe, at init, store all the pieces
-        # of a given player in a hashmap..
+
         self.board: np.ndarray = np.array(board)
         self.timeBudget = timeBudget
         self.playerSequence: PlayerSequence = playerSequence
@@ -58,6 +56,21 @@ class Board:
 
         return piecesByColor
    
+    def __getTurnNumber(self) -> int:
+        """
+        Returns the current turn number.
+        """
+
+        return (Board.__NUMBER_CREATED_BOARDS * self.playerSequence.numberOfPlayers) - 1
+
+    def resetBoardTurnCount() -> None:
+        """
+        Helper function used to reset the Board class
+        static field __NUMBER_CREATED_BOARDS.
+        Only needed and used for simulating purposes.
+        """
+        Board.__NUMBER_CREATED_BOARDS = 0
+
     def getPiecesByWeight(self, color: chr):
         """
         Yields the pieces on board for argument-given color
@@ -67,13 +80,6 @@ class Board:
         # yield from self.__piecesByColor[color]
         yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()))
         # yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()), reverse=True)
-
-    def __getTurnNumber(self) -> int:
-        """
-        Returns the current turn number.
-        """
-
-        return (Board.__NUMBER_CREATED_BOARDS * self.playerSequence.numberOfPlayers) - 1
 
     def getSize(self) -> tuple[int, int]:
         """
@@ -255,7 +261,7 @@ class Board:
 
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
-
+        print(f"Current turn -> {self.__getTurnNumber()}")
         print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
 
         # moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)

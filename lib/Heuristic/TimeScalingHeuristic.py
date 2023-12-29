@@ -28,6 +28,8 @@ class TimeScalingHeuristic(Heuristic):
         return self.__WEIGHTS
         
     def computeDepth(self, turn: int) -> int:
+        # print(f"Time-scaling heuristic -> turn {turn}")
+        
         # must compute based on standard
         # deviation at given turn
 

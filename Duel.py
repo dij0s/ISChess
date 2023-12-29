@@ -1,9 +1,9 @@
 from numpy import array, rot90
 from collections import defaultdict
+from collections.abc import Callable
 
 from lib.GameManager import *
-from Bots.BestChessBot import chess_bot as bestChessAI
-from Bots.npcChessBot import chess_bot as npcChessAI
+from lib.Board import Board
 
 class Duel:
     """
@@ -12,12 +12,12 @@ class Duel:
     information.
     """
 
-    def __init__(self, boardConfigurationFile: str) -> None:
+    def __init__(self, boardConfigurationFile: str, whiteAI: Callable, blackAI: Callable) -> None:
         self.__loadBoard(boardConfigurationFile)
         
         self.botsAIbyColor: dict = {}
-        self.botsAIbyColor['w'] = bestChessAI
-        self.botsAIbyColor['b'] = npcChessAI
+        self.botsAIbyColor['w'] = whiteAI
+        self.botsAIbyColor['b'] = blackAI
 
     def __loadBoard(self, boardConfigurationFile: str) -> None:
         """
@@ -81,7 +81,7 @@ class Duel:
 
         for _ in range(numberOfPlays):
             currentColor: chr = next(self.playerSequence)
-            currentAI: function = self.botsAIbyColor[currentColor]
+            currentAI: Callable = self.botsAIbyColor[currentColor]
             
             nextMove: list = currentAI(self.rawPlayerSequence, self.board, timeBudget)
             
@@ -101,17 +101,19 @@ class Duel:
             
         return self.__checkForWinner()
 
-    def simulateGames(boardConfigurationFile: str, iterations: int, numberOfPlays: int, timeBudget: float) -> defaultdict:
+    def simulateGames(boardConfigurationFile: str, whiteAI: Callable, blackAI: Callable, numberOfGames: int, numberOfPlays: int, timeBudget: float) -> defaultdict:
         """
-        Simulates an argument-given iterations of a chess duel
+        Simulates an argument-given number of games of chess
         with an argument-given number of plays and allowed
         time budget for the current game.
         """
 
         winStatisticsByColor: defaultdict = defaultdict(int)
 
-        for _ in range(iterations):
-            newDuel: Duel = Duel('./Data/maps/default.brd')
+        for _ in range(numberOfGames):
+            newDuel: Duel = Duel('./Data/maps/default.brd', whiteAI, blackAI)
             winStatisticsByColor[newDuel.simulateSingleGame(numberOfPlays, timeBudget)] += 1
+
+            Board.resetBoardTurnCount()
 
         return winStatisticsByColor
