@@ -1,5 +1,6 @@
 import numpy as np
 from collections import defaultdict
+from collections.abc import Callable
 
 from lib.GameManager.PlayerSequence import PlayerSequence
 from lib.Heuristic import Heuristic
@@ -12,7 +13,7 @@ class Board:
     __BOARD_PIECE_TYPE_INDEX: int = 0
     __BOARD_PIECE_COLOR_INDEX: int = 1
 
-    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.92
+    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.98
 
     def __init__(self,
                  board: list[list[str]],
@@ -30,7 +31,7 @@ class Board:
         self.board: np.ndarray = np.array(board)
         self.timeBudget = timeBudget
         self.playerSequence: PlayerSequence = playerSequence
-        self.computeDepth: callable = heuristic.computeDepth
+        self.computeDepth: Callable[[int], int] = heuristic.computeDepth
         self.weights: dict[chr, float] = heuristic.getWeights()
         self.__piecesByColor: defaultdict[chr, list[str]] = self.__getPiecesByColor()
 

@@ -1,5 +1,6 @@
 from numpy import array, rot90
 from collections import defaultdict
+from collections.abc import Callable
 
 from lib.GameManager import *
 from lib.Board import Board
@@ -11,7 +12,7 @@ class Duel:
     information.
     """
 
-    def __init__(self, boardConfigurationFile: str, whiteAI: callable, blackAI: callable) -> None:
+    def __init__(self, boardConfigurationFile: str, whiteAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]], blackAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]]) -> None:
         self.__loadBoard(boardConfigurationFile)
         
         self.botsAIbyColor: dict = {}
@@ -80,7 +81,7 @@ class Duel:
 
         for _ in range(numberOfPlays):
             currentColor: chr = next(self.playerSequence)
-            currentAI: Callable = self.botsAIbyColor[currentColor]
+            currentAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]] = self.botsAIbyColor[currentColor]
             
             nextMove: list = currentAI(self.rawPlayerSequence, self.board, timeBudget)
             oldPositionX, oldPositionY = nextMove[0]
@@ -89,7 +90,7 @@ class Duel:
             self.board[newPositionX][newPositionY] = self.board[oldPositionX][oldPositionY]
             self.board[oldPositionX][oldPositionY] = ''
 
-            self.board = rot90(self.board, 2)
+            self.board = rot90(self.board, self.playerSequence.rotationPerPlay)
             self.rawPlayerSequence = f"{self.rawPlayerSequence[3:]}{self.rawPlayerSequence[0:3]}"
 
             winner: str = self.__checkForWinner()
@@ -99,7 +100,7 @@ class Duel:
             
         return self.__checkForWinner()
 
-    def simulateGames(boardConfigurationFile: str, whiteAI: callable, blackAI: callable, numberOfGames: int, numberOfPlays: int, timeBudget: float) -> defaultdict:
+    def simulateGames(boardConfigurationFile: str, whiteAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]], blackAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]], numberOfGames: int, numberOfPlays: int, timeBudget: float) -> defaultdict:
         """
         Simulates an argument-given number of games of chess
         with an argument-given number of plays and allowed

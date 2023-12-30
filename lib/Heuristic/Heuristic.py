@@ -15,8 +15,19 @@ class Heuristic(object):
 
     @abstractmethod
     def getWeights() -> dict[chr, float]:
+        """
+        Returns the current weights of the
+        different chess pieces.
+        """
+
         pass
 
     @abstractmethod
     def computeDepth() -> int:
+        """
+        Computes and returns the current depth
+        of the chess board based on its pieces
+        weights.
+        """
+
         pass
