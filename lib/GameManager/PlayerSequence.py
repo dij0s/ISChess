@@ -43,14 +43,14 @@ class PlayerSequence(object):
 
         return boardsRotation
 
-    def __new__(self, sequence: str, *args, **kwargs):
-        if not hasattr(self, 'instance'):
-            self.instance = super(PlayerSequence, self).__new__(self, *args, **kwargs)
-        
-        return self.instance
+    # def __new__(self, sequence: str, *args, **kwargs):
+    #     if not hasattr(self, 'instance'):
+    #         self.instance = super(PlayerSequence, self).__new__(self, *args, **kwargs)
+
+    #     return self.instance
     
     def __init__(self, sequence: str, *args, **kwargs) -> None:
-        super().__init__(*args, *kwargs)
+        # super().__init__(*args, *kwargs)
 
         self.numberOfPlayers: int = len(sequence) // self.__TEAM_STRING_LENGTH
         self.rotationPerPlay: int = (360 // self.numberOfPlayers) // 90

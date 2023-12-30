@@ -24,5 +24,4 @@ class ConstantHeuristic(Heuristic):
         return self.__WEIGHTS
         
     def computeDepth(self, turn: int) -> int:
-        # print(f"Constant heuristic -> turn {turn}")
         return self.__BASE_DEPTH_

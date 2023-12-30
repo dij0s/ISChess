@@ -30,7 +30,7 @@ class Board:
         self.board: np.ndarray = np.array(board)
         self.timeBudget = timeBudget
         self.playerSequence: PlayerSequence = playerSequence
-        self.computeDepth = heuristic.computeDepth
+        self.computeDepth: callable = heuristic.computeDepth
         self.weights: dict[chr, float] = heuristic.getWeights()
         self.__piecesByColor: defaultdict[chr, list[str]] = self.__getPiecesByColor()
 
@@ -60,7 +60,6 @@ class Board:
         """
         Returns the current turn number.
         """
-
         return (Board.__NUMBER_CREATED_BOARDS * self.playerSequence.numberOfPlayers) - 1
 
     def resetBoardTurnCount() -> None:
@@ -159,7 +158,7 @@ class Board:
             # incase of near time budget reached
             # we shall go back up in the decision tree
             if timer.getElapsed() >= self.timeBudget * self.__BOARD_TIME_ALLOWANCE_FACTOR:
-                print("Overtime -> the ongoing branches are pruned.")
+                # print("Overtime -> the ongoing branches are pruned.")
                 isOvertime = True
                 
                 # incase of time budget reach
@@ -261,7 +260,6 @@ class Board:
 
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
-        print(f"Current turn -> {self.__getTurnNumber()}")
         print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
 
         # moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)

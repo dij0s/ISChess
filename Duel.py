@@ -1,6 +1,5 @@
 from numpy import array, rot90
 from collections import defaultdict
-from collections.abc import Callable
 
 from lib.GameManager import *
 from lib.Board import Board
@@ -12,7 +11,7 @@ class Duel:
     information.
     """
 
-    def __init__(self, boardConfigurationFile: str, whiteAI: Callable, blackAI: Callable) -> None:
+    def __init__(self, boardConfigurationFile: str, whiteAI: callable, blackAI: callable) -> None:
         self.__loadBoard(boardConfigurationFile)
         
         self.botsAIbyColor: dict = {}
@@ -84,7 +83,6 @@ class Duel:
             currentAI: Callable = self.botsAIbyColor[currentColor]
             
             nextMove: list = currentAI(self.rawPlayerSequence, self.board, timeBudget)
-            
             oldPositionX, oldPositionY = nextMove[0]
             newPositionX, newPositionY = nextMove[1]
 
@@ -101,7 +99,7 @@ class Duel:
             
         return self.__checkForWinner()
 
-    def simulateGames(boardConfigurationFile: str, whiteAI: Callable, blackAI: Callable, numberOfGames: int, numberOfPlays: int, timeBudget: float) -> defaultdict:
+    def simulateGames(boardConfigurationFile: str, whiteAI: callable, blackAI: callable, numberOfGames: int, numberOfPlays: int, timeBudget: float) -> defaultdict:
         """
         Simulates an argument-given number of games of chess
         with an argument-given number of plays and allowed
