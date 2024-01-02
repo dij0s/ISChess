@@ -3,11 +3,11 @@ from collections import defaultdict
 from collections.abc import Callable
 
 from lib.GameManager.PlayerSequence import PlayerSequence
-from lib.Heuristic import Heuristic
+from lib.AdvancedHeuristic import AdvancedHeuristic
 from lib import BetterMoveByPiece
 from lib.GameManager.Timer import Timer
 
-class Board:
+class AdvancedBoard:
     __NUMBER_CREATED_BOARDS: int = 0
     
     __BOARD_PIECE_TYPE_INDEX: int = 0
@@ -20,21 +20,21 @@ class Board:
     def __init__(self,
                  board: list[list[str]],
                  playerSequence: PlayerSequence,
-                 heuristic: Heuristic,
+                 advancedHeuristic: AdvancedHeuristic,
                  timeBudget: float):
         """
-        Initializes a Board object given a board: list[list[int]],
-        a player sequence: PlayerSequence and a heuristic: Heuristic 
+        Initializes a AdvancedBoard object given a board: list[list[int]],
+        a player sequence: PlayerSequence and a advancedHeuristic: AdvancedHeuristic 
         """
-        Board.__NUMBER_CREATED_BOARDS += 1
+        AdvancedBoard.__NUMBER_CREATED_BOARDS += 1
 
-        Board.__BOARD_STATES_VISITED = 0
+        AdvancedBoard.__BOARD_STATES_VISITED = 0
 
         self.board: np.ndarray = np.array(board)
         self.timeBudget = timeBudget
         self.playerSequence: PlayerSequence = playerSequence
-        self.computeDepth: Callable[[int], int] = heuristic.computeDepth
-        self.weights: dict[chr, float] = heuristic.getWeights()
+        self.computeDepth: Callable[[int], int] = advancedHeuristic.computeDepth
+        self.weights: dict[chr, float] = advancedHeuristic.getWeights(self.board)
         self.__piecesByColor: defaultdict[chr, list[str]] = self.__getPiecesByColor()
 
     def __getPiecesByColor(self) -> defaultdict[chr, list[str]]:
@@ -63,15 +63,15 @@ class Board:
         """
         Returns the current turn number.
         """
-        return (Board.__NUMBER_CREATED_BOARDS * self.playerSequence.numberOfPlayers) - 1
-
+        return (AdvancedBoard.__NUMBER_CREATED_BOARDS * self.playerSequence.numberOfPlayers) - 1
+    
     def resetBoardTurnCount() -> None:
         """
-        Helper function used to reset the Board class
+        Helper function used to reset the AdvancedBoard class
         static field __NUMBER_CREATED_BOARDS.
         Only needed and used for simulating purposes.
         """
-        Board.__NUMBER_CREATED_BOARDS = 0
+        AdvancedBoard.__NUMBER_CREATED_BOARDS = 0
 
     def getPiecesByWeight(self, color: chr):
         """
@@ -100,6 +100,7 @@ class Board:
     def isGameOver(self) -> bool:
         """
         Returns True if the board's main color player king still is present.
+        The main color is defined by the PlayerSequence.
 
         Improves pruning when computing a move.
         """
@@ -114,13 +115,13 @@ class Board:
 
         evaluation: float = 0
 
-        for row in self.board:
-            for piece in row:
+        for i, row in enumerate(self.board):
+            for j, piece in enumerate(row):
                 if piece != '' and piece != 'XX':
                     # get our color in sequence
                     sign: int = -1 if piece[self.__BOARD_PIECE_COLOR_INDEX] != self.playerSequence.ownTeamColor else 1
                     currentPiece: chr = piece[self.__BOARD_PIECE_TYPE_INDEX]
-                    evaluation += sign * self.weights[currentPiece](self.__getTurnNumber())
+                    evaluation += sign * self.weights[currentPiece]((i, j))
 
         return evaluation
 
@@ -149,7 +150,7 @@ class Board:
             # tracks and counts the total
             # recursion calls made in a single
             # move computation
-            Board.__BOARD_STATES_VISITED += 1
+            AdvancedBoard.__BOARD_STATES_VISITED += 1
 
             # check if we shall maximize for
             # given player or minimize
@@ -260,11 +261,11 @@ class Board:
 
                 return minEvaluation
 
-        depth: int = self.computeDepth(self.__getTurnNumber())
+        depth: int = self.computeDepth()
 
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
-        print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
+        print(f"{AdvancedBoard.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
         print(bestMoveWrapper)
         moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1) if (len(bestMoveWrapper) != 1 and isStochastic) else -1
 

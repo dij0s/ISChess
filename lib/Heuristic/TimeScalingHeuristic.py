@@ -7,9 +7,8 @@ class TimeScalingHeuristic(Heuristic):
     pieces associated weights considering a time-scaling
     factor.
     It will also compute the minimax algorithm alpha beta
-    tree depth based on the weights variance.
+    tree depth based on the weights standard deviation.
     """
-    # Maybe compute in relation to max number of plays too ?
 
     def __init__(self):
         self.__WEIGHTS: dict[chr, float] = {
