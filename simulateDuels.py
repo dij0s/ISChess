@@ -6,9 +6,9 @@ from Bots.BestChessBot import chess_bot as bestChessAI
 from Bots.npcChessBot import chess_bot as npcChessAI
 from Bots.BaseChessBot import chess_bot as baseChessAI
 
-__NUMBER_OF_GAMES: int = 100
+__NUMBER_OF_GAMES: int = 1
 __NUMBER_OF_PLAYS: int = 40
-__TIME_BUDGET: float = 0.75
+__TIME_BUDGET: float = 0.125
 
 __WHITE_AI: Callable = bestChessAI
 __BLACK_AI: Callable = npcChessAI

@@ -13,7 +13,7 @@ class Board:
     __BOARD_PIECE_TYPE_INDEX: int = 0
     __BOARD_PIECE_COLOR_INDEX: int = 1
 
-    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.98
+    __BOARD_TIME_ALLOWANCE_FACTOR: float = 0.92
 
     def __init__(self,
                  board: list[list[str]],
@@ -77,8 +77,8 @@ class Board:
         sorted by their respective heuristical value
         """
 
-        # yield from self.__piecesByColor[color]
-        yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()))
+        yield from self.__piecesByColor[color]
+        # yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()))
         # yield from sorted(self.__piecesByColor[color], key=lambda piece: self.weights[piece[0]](self.__getTurnNumber()), reverse=True)
 
     def getSize(self) -> tuple[int, int]:
@@ -131,7 +131,7 @@ class Board:
 
         return np.rot90(self.board, k=nbrRot, axes=(0, 1))
     
-    def computeNextMove(self) -> list[tuple[int, int]]:
+    def computeNextMove(self, isStochastic: bool = False) -> list[tuple[int, int]]:
         """
         This function returns the following move that shall
         be played based on a minimax alpha beta algorithm.
@@ -262,8 +262,7 @@ class Board:
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
         print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
-
-        # moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1)
-        moveIndex: int = -1
+        print(bestMoveWrapper)
+        moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1) if (len(bestMoveWrapper) != 1 and isStochastic) else -1
 
         return bestMoveWrapper[moveIndex]
