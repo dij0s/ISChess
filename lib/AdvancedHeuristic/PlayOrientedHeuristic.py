@@ -40,7 +40,7 @@ class PlayOrientedHeuristic(AdvancedHeuristic):
     
     def __computeCenterMassProximity(self, piecePosition: tuple[int, int], defaultWeight: float) -> float:
         euclidianDistance: float = np.sqrt((piecePosition[0] - self.__CENTER_MASS[0])**2 + (piecePosition[1] - self.__CENTER_MASS[1])**2)
-        proximityFactor: float = (2 / np.exp(euclidianDistance)) + 1
+        proximityFactor: float = (5 / np.exp(euclidianDistance)) + 1
 
         return defaultWeight * proximityFactor
 
