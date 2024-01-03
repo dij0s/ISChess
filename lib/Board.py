@@ -2,6 +2,8 @@ import numpy as np
 from collections import defaultdict
 from collections.abc import Callable
 
+import sys
+
 from lib.GameManager.PlayerSequence import PlayerSequence
 from lib.Heuristic import Heuristic
 from lib import BetterMoveByPiece
@@ -145,7 +147,7 @@ class Board:
             """
             Helper function used to actually compute the next move, recursively.
             """
-            
+
             # tracks and counts the total
             # recursion calls made in a single
             # move computation
@@ -211,9 +213,11 @@ class Board:
 
                             if isRoot:
                                 bestMove.clear()
+                                # print(f"{[(i,j), (move[0], move[1])]} -> {currentEvaluation}")
                                 bestMove.append([(i,j), (move[0], move[1])])
                         elif currentEvaluation == maxEvaluation:
                             if isRoot:
+                                # print(f"{[(i,j), (move[0], move[1])]} -> {currentEvaluation}")
                                 bestMove.append([(i,j), (move[0], move[1])])
 
                         alpha: float = max(alpha, currentEvaluation)
@@ -224,7 +228,7 @@ class Board:
                 return maxEvaluation
 
             else:
-                minEvaluation: float = float('inf')
+                minEvaluation: float = float('+inf')
 
                 for piece in self.getPiecesByWeight(currentColor):
 
@@ -265,7 +269,7 @@ class Board:
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
         print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
-        print(bestMoveWrapper)
+        # print(bestMoveWrapper)
         moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1) if (len(bestMoveWrapper) != 1 and isStochastic) else -1
 
         return bestMoveWrapper[moveIndex]
