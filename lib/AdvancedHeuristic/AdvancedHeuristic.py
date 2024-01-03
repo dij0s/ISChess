@@ -1,15 +1,15 @@
 from abc import abstractmethod
 
-class Heuristic(object):
+class AdvancedHeuristic(object):
     """
-    Parent class used to define heuristics.
+    Parent class used to define advanced heuristics.
     Its childs are only instantiated once as it
     is a singleton.
     """
 
     def __new__(self):
         if not hasattr(self, 'instance'):
-            self.instance = super(Heuristic, self).__new__(self)
+            self.instance = super(AdvancedHeuristic, self).__new__(self)
 
         return self.instance
 

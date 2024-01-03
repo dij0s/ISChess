@@ -16,7 +16,7 @@ class ConstantHeuristic(Heuristic):
             'n': (lambda _: 3.0),
             'b': (lambda _: 3.0),
             'q': (lambda _: 9.0),
-            'k': (lambda _: 1e10)
+            'k': (lambda _: 1e3)
         }
         self.__BASE_DEPTH_: int = 4
 
