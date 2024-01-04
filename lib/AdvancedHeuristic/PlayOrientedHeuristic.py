@@ -21,7 +21,7 @@ class PlayOrientedHeuristic(AdvancedHeuristic):
             'k': (lambda piecePosition: self.__computeCenterMassProximity(piecePosition, 1e3))
         }
 
-        self.__BASE_DEPTH_: int = 3
+        self.__BASE_DEPTH_: int = 4
 
     def __computeCenterMass(self, board: np.array) -> tuple[float, float]:
         validPositionsX: list[float] = []

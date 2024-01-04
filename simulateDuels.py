@@ -2,16 +2,17 @@ from collections import defaultdict
 from collections.abc import Callable
 
 from Duel import Duel
-from Bots.BestChessBot import chess_bot as bestChessAI
-from Bots.npcChessBot import chess_bot as npcChessAI
-from Bots.BaseChessBot import chess_bot as baseChessAI
+from Bots.BestChessBot import chess_bot as TimeScalingAI
+from Bots.npcChessBot import chess_bot as ConstantAI
+from Bots.GoodChessBot import chess_bot as FixedDepthTimeScalingAI
+from Bots.AdvancedChessBot import chess_bot as PlayOrientedAI
 
 __NUMBER_OF_GAMES: int = 1
-__NUMBER_OF_PLAYS: int = 40
-__TIME_BUDGET: float = 0.125
+__NUMBER_OF_PLAYS: int = 70
+__TIME_BUDGET: float = 0.750
 
-__WHITE_AI: Callable = bestChessAI
-__BLACK_AI: Callable = npcChessAI
+__WHITE_AI: Callable = TimeScalingAI
+__BLACK_AI: Callable = FixedDepthTimeScalingAI
 
 winStatisticsByColor: defaultdict = Duel.simulateGames('./Data/maps/default.brd', __WHITE_AI, __BLACK_AI, __NUMBER_OF_GAMES, __NUMBER_OF_PLAYS, __TIME_BUDGET)
 

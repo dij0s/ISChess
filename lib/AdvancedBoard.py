@@ -147,11 +147,6 @@ class AdvancedBoard:
             Helper function used to actually compute the next move, recursively.
             """
             
-            # tracks and counts the total
-            # recursion calls made in a single
-            # move computation
-            AdvancedBoard.__BOARD_STATES_VISITED += 1
-
             # check if we shall maximize for
             # given player or minimize
             currentColor: chr = next(self.playerSequence)
@@ -171,6 +166,11 @@ class AdvancedBoard:
                 # depending on the current's node
                 # max/min-imizing goal
                 return float('-inf') if isMaximizing else float('+inf')
+            else:
+                # tracks and counts the total
+                # recursion calls made in a single
+                # move computation
+                AdvancedBoard.__BOARD_STATES_VISITED += 1
 
             if depth == 0 or self.isGameOver():
                 return self.computeEvaluation()

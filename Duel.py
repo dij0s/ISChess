@@ -1,9 +1,11 @@
 from numpy import array, rot90
 from collections import defaultdict
 from collections.abc import Callable
+from time import sleep
 
 from lib.GameManager import *
 from lib.Board import Board
+from lib.AdvancedBoard import AdvancedBoard
 
 class Duel:
     """
@@ -114,5 +116,8 @@ class Duel:
             winStatisticsByColor[newDuel.simulateSingleGame(numberOfPlays, timeBudget)] += 1
 
             Board.resetBoardTurnCount()
+            AdvancedBoard.resetBoardTurnCount()
+
+            sleep(2)
 
         return winStatisticsByColor
