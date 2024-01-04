@@ -30,7 +30,6 @@ class TimeScalingHeuristic(Heuristic):
         # get values of the weights
         # at the argument given turn
         currentWeights: list[float] = list(map(lambda w: w(turn), self.__WEIGHTS.values()))
-        print(abs(np.var(currentWeights) - self.__BASE_STANDARD_VARIANCE))
 
         # must compute based on standard
         # deviation at any given turn

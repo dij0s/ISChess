@@ -10,7 +10,7 @@ def chess_bot(player_sequence: str, board: list[list[str]], time_budget, **kwarg
     heuristic: ConstantHeuristic = ConstantHeuristic()
    
     currentBoard: Board = Board(board, playerSequence, heuristic, time_budget)
-    bestMove: list[tuple[int, int]] = currentBoard.computeNextMove()
+    bestMove: list[tuple[int, int]] = currentBoard.computeNextMove(True)
 
     return bestMove
 

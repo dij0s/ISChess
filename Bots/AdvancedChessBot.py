@@ -9,7 +9,7 @@ def chess_bot(player_sequence: str, board: list[list[str]], time_budget: float, 
     advancedHeuristic: PlayOrientedHeuristic = PlayOrientedHeuristic()
 
     currentBoard: AdvancedBoard = AdvancedBoard(board, playerSequence, advancedHeuristic, time_budget)
-    bestMove: list[tuple[int, int]] = currentBoard.computeNextMove()
+    bestMove: list[tuple[int, int]] = currentBoard.computeNextMove(True)
 
     return bestMove
 
