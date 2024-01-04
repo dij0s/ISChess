@@ -12,7 +12,7 @@ __NUMBER_OF_PLAYS: int = 70
 __TIME_BUDGET: float = 0.750
 
 __WHITE_AI: Callable = TimeScalingAI
-__BLACK_AI: Callable = FixedDepthTimeScalingAI
+__BLACK_AI: Callable = TimeScalingAI
 
 winStatisticsByColor: defaultdict = Duel.simulateGames('./Data/maps/default.brd', __WHITE_AI, __BLACK_AI, __NUMBER_OF_GAMES, __NUMBER_OF_PLAYS, __TIME_BUDGET)
 

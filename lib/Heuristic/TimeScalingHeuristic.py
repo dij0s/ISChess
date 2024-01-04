@@ -21,7 +21,7 @@ class TimeScalingHeuristic(Heuristic):
         }
 
         self.__BASE_DEPTH_: int = 2
-        self.__BASE_STANDARD_DEVIATION: float = np.std(list(map(lambda w: w(0), self.__WEIGHTS.values())))
+        self.__BASE_STANDARD_VARIANCE: float = np.var(list(map(lambda w: w(0), self.__WEIGHTS.values())))
 
     def getWeights(self) -> dict:
         return self.__WEIGHTS
@@ -30,9 +30,10 @@ class TimeScalingHeuristic(Heuristic):
         # get values of the weights
         # at the argument given turn
         currentWeights: list[float] = list(map(lambda w: w(turn), self.__WEIGHTS.values()))
+        print(abs(np.var(currentWeights) - self.__BASE_STANDARD_VARIANCE))
 
         # must compute based on standard
         # deviation at any given turn
-        depth: int = self.__BASE_DEPTH_ + round(np.log(np.std(currentWeights) / self.__BASE_STANDARD_DEVIATION))
+        depth: int = self.__BASE_DEPTH_ + round(np.log(abs(np.var(currentWeights) - self.__BASE_STANDARD_VARIANCE)) / 3)
 
         return depth
