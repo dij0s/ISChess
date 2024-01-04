@@ -2,6 +2,8 @@ import numpy as np
 from collections import defaultdict
 from collections.abc import Callable
 
+import sys
+
 from lib.GameManager.PlayerSequence import PlayerSequence
 from lib.Heuristic import Heuristic
 from lib import BetterMoveByPiece
@@ -9,7 +11,7 @@ from lib.GameManager.Timer import Timer
 
 class Board:
     __NUMBER_CREATED_BOARDS: int = 0
-    
+
     __BOARD_PIECE_TYPE_INDEX: int = 0
     __BOARD_PIECE_COLOR_INDEX: int = 1
     __BOARD_PIECE_POSITION_X_INDEX: int = 2
@@ -24,12 +26,14 @@ class Board:
                  timeBudget: float):
         """
         Initializes a Board object given a board: list[list[int]],
-        a player sequence: PlayerSequence and a heuristic: Heuristic 
+        a player sequence: PlayerSequence and a heuristic: Heuristic
         """
         Board.__NUMBER_CREATED_BOARDS += 1
 
         Board.__BOARD_STATES_VISITED = 0
 
+        self.__lastMove = [[(0,0), (0,0)]]
+        self.__lastEval = float('-inf')
         self.board: np.ndarray = np.array(board)
         self.timeBudget = timeBudget
         self.playerSequence: PlayerSequence = playerSequence
@@ -42,7 +46,7 @@ class Board:
         Returns a dictionnary that maps the pieces
         present on board for each player color and
         stores its position in the following format :
-        
+
         'pieceType''pieceColor''i''j'
         """
 
@@ -58,7 +62,7 @@ class Board:
                     piecesByColor[currentColor].append(pieceIdentifier)
 
         return piecesByColor
-   
+
     def __getTurnNumber(self) -> int:
         """
         Returns the current turn number.
@@ -96,7 +100,7 @@ class Board:
         """
 
         return np.copy(self.board)
-    
+
     def isGameOver(self) -> bool:
         """
         Returns True if the board's main color player king still is present.
@@ -121,7 +125,6 @@ class Board:
                     sign: int = -1 if piece[self.__BOARD_PIECE_COLOR_INDEX] != self.playerSequence.ownTeamColor else 1
                     currentPiece: chr = piece[self.__BOARD_PIECE_TYPE_INDEX]
                     evaluation += sign * self.weights[currentPiece](self.__getTurnNumber())
-
         return evaluation
 
     def rotateBoard(self, nbrRot: int = 2) -> np.ndarray:
@@ -132,7 +135,7 @@ class Board:
         """
 
         return np.rot90(self.board, k=nbrRot, axes=(0, 1))
-    
+
     def computeNextMove(self, isStochastic: bool = False) -> list[tuple[int, int]]:
         """
         This function returns the following move that shall
@@ -145,11 +148,6 @@ class Board:
             """
             Helper function used to actually compute the next move, recursively.
             """
-            
-            # tracks and counts the total
-            # recursion calls made in a single
-            # move computation
-            Board.__BOARD_STATES_VISITED += 1
 
             # check if we shall maximize for
             # given player or minimize
@@ -163,15 +161,29 @@ class Board:
             if timer.getElapsed() >= self.timeBudget * self.__BOARD_TIME_ALLOWANCE_FACTOR:
                 # print("Overtime -> the ongoing branches are pruned.")
                 isOvertime = True
-                
+
                 # incase of time budget reach
                 # shall return a case that gets
                 # pruned by the decision tree
                 # depending on the current's node
                 # max/min-imizing goal
                 return float('-inf') if isMaximizing else float('+inf')
+            else:
+                # tracks and counts the total
+                # recursion calls made in a single
+                # move computation
+                Board.__BOARD_STATES_VISITED += 1
 
             if depth == 0 or self.isGameOver():
+                # print(self.board)
+                # print(self.__lastMove)
+                # print(self.computeEvaluation())
+                if self.computeEvaluation() > self.__lastEval:
+                    bestMove.clear()
+                    bestMove.append(self.__lastMove)
+                    self.__lastEval = self.computeEvaluation()
+                elif self.computeEvaluation() == self.__lastEval:
+                    bestMove.append(self.__lastMove)
                 return self.computeEvaluation()
 
             if isMaximizing:
@@ -183,7 +195,7 @@ class Board:
                     pieceType: chr = piece[self.__BOARD_PIECE_TYPE_INDEX]
 
                     for move in BetterMoveByPiece.pieceMovement[pieceType](currentColor, (i, j), self.board):
-                        
+
                         # save position of further move
                         savedPiece = self.board[move[0]][move[1]]
 
@@ -192,6 +204,9 @@ class Board:
 
                         self.__piecesByColor[currentColor].remove(piece)
                         self.__piecesByColor[currentColor].append(f"{piece[0:2]}{move[0]}{move[1]}")
+
+                        if isRoot:
+                            self.__lastMove = [(i, j), (move[0], move[1])]
 
                         currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
 
@@ -205,16 +220,18 @@ class Board:
                         self.__piecesByColor[currentColor].remove(f"{piece[0:2]}{move[0]}{move[1]}")
                         self.__piecesByColor[currentColor].append(piece)
 
-                        # maxEvaluation = max(maxEvaluation, currentEvaluation)
-                        if currentEvaluation > maxEvaluation:
-                            maxEvaluation = currentEvaluation
-
-                            if isRoot:
-                                bestMove.clear()
-                                bestMove.append([(i,j), (move[0], move[1])])
-                        elif currentEvaluation == maxEvaluation:
-                            if isRoot:
-                                bestMove.append([(i,j), (move[0], move[1])])
+                        maxEvaluation = max(maxEvaluation, currentEvaluation)
+                        # if currentEvaluation > maxEvaluation:
+                        #     maxEvaluation = currentEvaluation
+                        #
+                        #     if isRoot:
+                        #         bestMove.clear()
+                        #         # print(f"{[(i,j), (move[0], move[1])]} -> {currentEvaluation}")
+                        #         bestMove.append([(i,j), (move[0], move[1])])
+                        # elif currentEvaluation == maxEvaluation:
+                        #     if isRoot:
+                        #         # print(f"{[(i,j), (move[0], move[1])]} -> {currentEvaluation}")
+                        #         bestMove.append([(i,j), (move[0], move[1])])
 
                         alpha: float = max(alpha, currentEvaluation)
 
@@ -224,7 +241,7 @@ class Board:
                 return maxEvaluation
 
             else:
-                minEvaluation: float = float('inf')
+                minEvaluation: float = float('+inf')
 
                 for piece in self.getPiecesByWeight(currentColor):
 
@@ -265,7 +282,7 @@ class Board:
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
         print(f"{Board.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
-        print(bestMoveWrapper)
+        # print(bestMoveWrapper)
         moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1) if (len(bestMoveWrapper) != 1 and isStochastic) else -1
 
         return bestMoveWrapper[moveIndex]
