@@ -36,6 +36,8 @@ class AdvancedBoard:
         self.computeDepth: Callable[[int], int] = advancedHeuristic.computeDepth
         self.weights: dict[chr, float] = advancedHeuristic.getWeights(self.board)
         self.__piecesByColor: defaultdict[chr, list[str]] = self.__getPiecesByColor()
+        self.__lastMove: list[tuple[int, int]] = [(0,0), (0,0)]
+        self.__lastBoardEvaluation: float = float('-inf')
 
     def __getPiecesByColor(self) -> defaultdict[chr, list[str]]:
         """
@@ -63,6 +65,7 @@ class AdvancedBoard:
         """
         Returns the current turn number.
         """
+        
         return (AdvancedBoard.__NUMBER_CREATED_BOARDS * self.playerSequence.numberOfPlayers) - 1
     
     def resetBoardTurnCount() -> None:
@@ -71,6 +74,7 @@ class AdvancedBoard:
         static field __NUMBER_CREATED_BOARDS.
         Only needed and used for simulating purposes.
         """
+        
         AdvancedBoard.__NUMBER_CREATED_BOARDS = 0
 
     def getPiecesByWeight(self, color: chr):
@@ -173,6 +177,17 @@ class AdvancedBoard:
                 AdvancedBoard.__BOARD_STATES_VISITED += 1
 
             if depth == 0 or self.isGameOver():
+                # stores best move depending
+                # on its evaluation
+                if self.computeEvaluation() > self.__lastBoardEvaluation:
+                    bestMove.clear()
+                    bestMove.append(self.__lastMove)
+                    
+                    self.__lastBoardEvaluation = self.computeEvaluation()
+
+                elif self.computeEvaluation() == self.__lastBoardEvaluation:
+                    bestMove.append(self.__lastMove)
+
                 return self.computeEvaluation()
 
             if isMaximizing:
@@ -194,6 +209,9 @@ class AdvancedBoard:
                         self.__piecesByColor[currentColor].remove(piece)
                         self.__piecesByColor[currentColor].append(f"{piece[0:2]}{move[0]}{move[1]}")
 
+                        if isRoot:
+                            self.__lastMove = [(i, j), (move[0], move[1])]
+                        
                         currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
 
                         if isOvertime:
@@ -265,8 +283,9 @@ class AdvancedBoard:
 
         bestMoveWrapper: list = []
         minimaxAlphaBeta(depth, float('-inf'), float('+inf'), bestMoveWrapper, True)
-        print(f"{AdvancedBoard.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
-        print(bestMoveWrapper)
+
         moveIndex: int = np.random.randint(0, len(bestMoveWrapper) - 1) if (len(bestMoveWrapper) != 1 and isStochastic) else -1
+
+        print(f"{AdvancedBoard.__BOARD_STATES_VISITED} states have been evaluated with a depth of {depth}.")
 
         return bestMoveWrapper[moveIndex]

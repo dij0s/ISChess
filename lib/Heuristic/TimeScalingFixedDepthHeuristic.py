@@ -10,11 +10,11 @@ class TimeScalingFixedDepthHeuristic(Heuristic):
 
     def __init__(self):
         self.__WEIGHTS: dict[chr, float] = {
-            'p': (lambda turn: 1.0 * np.exp(turn / 7.5)),
+            'p': (lambda turn: 1.0 * np.exp(turn / 45)),
             'r': (lambda _: 5.0),
             'n': (lambda _: 3.0),
             'b': (lambda _: 3.0),
-            'q': (lambda turn: 9.0 * np.exp(turn / 6)),
+            'q': (lambda turn: 9.0 * np.exp(turn / 50)),
             'k': (lambda _: 1e3)
         }
 
