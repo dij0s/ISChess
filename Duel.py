@@ -116,6 +116,14 @@ class Duel:
             winner: str = self.__checkForWinner()
 
             if (winner == 'w' or winner == 'b') and not withStatistics:
+                if withStatistics:
+                    for teamColor, computationTimes in timeGameStatistics.items():
+                        meanComputationTime: float = sum(computationTimes) / len(computationTimes)
+                        print(f"Team '{teamColor}' has an average computation time of {meanComputationTime:.3f}s")
+                    for teamColor, visitedStates in statesGameStatistics.items():
+                        meanStatesVisited: int = sum(visitedStates) // len(visitedStates)
+                        print(f"Team '{teamColor}' has an average number of visited states of {meanStatesVisited}")
+                
                 return winner
             
         if withStatistics:
