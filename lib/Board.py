@@ -2,8 +2,6 @@ import numpy as np
 from collections import defaultdict
 from collections.abc import Callable
 
-import sys
-
 from lib.GameManager.PlayerSequence import PlayerSequence
 from lib.Heuristic import Heuristic
 from lib import BetterMoveByPiece
@@ -11,6 +9,7 @@ from lib.GameManager.Timer import Timer
 
 class Board:
     __NUMBER_CREATED_BOARDS: int = 0
+    __BOARD_STATES_VISITED: int = 0
     
     __BOARD_PIECE_TYPE_INDEX: int = 0
     __BOARD_PIECE_COLOR_INDEX: int = 1
@@ -28,9 +27,10 @@ class Board:
         Initializes a Board object given a board: list[list[int]],
         a player sequence: PlayerSequence and a heuristic: Heuristic 
         """
+
         Board.__NUMBER_CREATED_BOARDS += 1
 
-        Board.__BOARD_STATES_VISITED = 0
+        Board.__BOARD_STATES_VISITED: int = 0
 
         self.board: np.ndarray = np.array(board)
         self.timeBudget = timeBudget
@@ -70,7 +70,16 @@ class Board:
         
         return (Board.__NUMBER_CREATED_BOARDS * self.playerSequence.numberOfPlayers) - 1
 
-    def resetBoardTurnCount() -> None:
+    def getVisitedStatesCount() -> int:
+        """
+        Helper function used to get the number of
+        states that have been evaluated to compute
+        the following move.
+        """
+
+        return Board.__BOARD_STATES_VISITED
+
+    def resetTurnCount() -> None:
         """
         Helper function used to reset the Board class
         static field __NUMBER_CREATED_BOARDS.

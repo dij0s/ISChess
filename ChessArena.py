@@ -126,10 +126,8 @@ class ChessArena(QtWidgets.QWidget):
             for row in self.board:
                 for elem in row:
                     if len(elem) > 0 and elem[0] == 'k':
-                        if int(self.player_order[self.player_order.find(elem[1])-1]) != int(self.current_player.team)
+                        if int(self.player_order[self.player_order.find(elem[1])-1]) != int(self.current_player.team):
                             all_other_defeated = False
-
-            all_other_defeated = player_color if all_other_defeated else False
 
         #   Update board state
         self.current_player = None

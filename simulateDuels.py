@@ -2,6 +2,7 @@ from collections import defaultdict
 from collections.abc import Callable
 
 from Duel import Duel
+
 from Bots.BestChessBot import chess_bot as TimeScalingAI
 from Bots.npcChessBot import chess_bot as ConstantAI
 from Bots.GoodChessBot import chess_bot as FixedDepthTimeScalingAI

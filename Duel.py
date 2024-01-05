@@ -1,7 +1,6 @@
 from numpy import array, rot90
 from collections import defaultdict
 from collections.abc import Callable
-from time import sleep
 
 from lib.GameManager import *
 from lib.Board import Board
@@ -15,6 +14,8 @@ class Duel:
     """
 
     def __init__(self, boardConfigurationFile: str, whiteAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]], blackAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]]) -> None:
+        self.__KWARGS_STATISTICS: str = "withStatistics"
+        
         self.__loadBoard(boardConfigurationFile)
         
         self.botsAIbyColor: dict = {}
@@ -73,19 +74,36 @@ class Duel:
         else:
             return 'w'
         
-    def simulateSingleGame(self, numberOfPlays: int, timeBudget: float) -> str:
+    def simulateSingleGame(self, numberOfPlays: int, timeBudget: float, **kwargs) -> str:
         """
         Simulates a chess duel with an argument-given
         number of plays and allowed time budget
         for the current game.
         Returns the winner of the game.
         """
+        
+        withStatistics: bool = self.__KWARGS_STATISTICS in kwargs
+
+        timeGameStatistics: defaultdict[chr, list[float]] = defaultdict(list) if withStatistics else None
+        statesGameStatistics: defaultdict[chr, list[int]] = defaultdict(list) if withStatistics else None
+        
+        timer: Timer = None
+        currentBoardClass = None
 
         for _ in range(numberOfPlays):
             currentColor: chr = next(self.playerSequence)
             currentAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]] = self.botsAIbyColor[currentColor]
             
+            if withStatistics:
+                currentBoardClass = AdvancedBoard if "AdvancedChessBot" in currentAI.__module__ else Board
+                timer = Timer()
+
             nextMove: list = currentAI(self.rawPlayerSequence, self.board, timeBudget)
+
+            if withStatistics:
+                timeGameStatistics[currentColor].append(timer.getElapsed())
+                statesGameStatistics[currentColor].append(currentBoardClass.getVisitedStatesCount())          
+
             oldPositionX, oldPositionY = nextMove[0]
             newPositionX, newPositionY = nextMove[1]
 
@@ -95,11 +113,19 @@ class Duel:
             self.board = rot90(self.board, self.playerSequence.rotationPerPlay)
             self.rawPlayerSequence = f"{self.rawPlayerSequence[3:]}{self.rawPlayerSequence[0:3]}"
 
-            winner: str = self.__checkForWinner()
+            # winner: str = self.__checkForWinner()
+
+            # if winner == 'w' or winner == 'b':
+            #     return winner
             
-            if winner == 'w' or winner == 'b':
-                return winner
-            
+        if withStatistics:
+            for teamColor, computationTimes in timeGameStatistics.items():
+                meanComputationTime: float = sum(computationTimes) / len(computationTimes)
+                print(f"Team '{teamColor}' has an average computation time of {meanComputationTime:.3f}")
+            for teamColor, visitedStates in statesGameStatistics.items():
+                meanStatesVisited: int = sum(visitedStates) // len(visitedStates)
+                print(f"Team '{teamColor}' has an average number of visited states of {meanStatesVisited}")
+
         return self.__checkForWinner()
 
     def simulateGames(boardConfigurationFile: str, whiteAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]], blackAI: Callable[[str, list[list[str]], float], list[tuple[int, int]]], numberOfGames: int, numberOfPlays: int, timeBudget: float) -> defaultdict:
@@ -115,9 +141,7 @@ class Duel:
             newDuel: Duel = Duel('./Data/maps/default.brd', whiteAI, blackAI)
             winStatisticsByColor[newDuel.simulateSingleGame(numberOfPlays, timeBudget)] += 1
 
-            Board.resetBoardTurnCount()
-            AdvancedBoard.resetBoardTurnCount()
-
-            sleep(2)
+            Board.resetTurnCount()
+            AdvancedBoard.resetTurnCount()
 
         return winStatisticsByColor

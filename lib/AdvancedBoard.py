@@ -9,6 +9,7 @@ from lib.GameManager.Timer import Timer
 
 class AdvancedBoard:
     __NUMBER_CREATED_BOARDS: int = 0
+    __BOARD_STATES_VISITED: int = 0
     
     __BOARD_PIECE_TYPE_INDEX: int = 0
     __BOARD_PIECE_COLOR_INDEX: int = 1
@@ -26,6 +27,7 @@ class AdvancedBoard:
         Initializes a AdvancedBoard object given a board: list[list[int]],
         a player sequence: PlayerSequence and a advancedHeuristic: AdvancedHeuristic 
         """
+        
         AdvancedBoard.__NUMBER_CREATED_BOARDS += 1
 
         AdvancedBoard.__BOARD_STATES_VISITED = 0
@@ -68,7 +70,16 @@ class AdvancedBoard:
         
         return (AdvancedBoard.__NUMBER_CREATED_BOARDS * self.playerSequence.numberOfPlayers) - 1
     
-    def resetBoardTurnCount() -> None:
+    def getVisitedStatesCount() -> int:
+        """
+        Helper function used to get the number of
+        states that have been evaluated to compute
+        the following move.
+        """
+
+        return AdvancedBoard.__BOARD_STATES_VISITED
+
+    def resetTurnCount() -> None:
         """
         Helper function used to reset the AdvancedBoard class
         static field __NUMBER_CREATED_BOARDS.
