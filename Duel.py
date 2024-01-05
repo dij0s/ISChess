@@ -113,15 +113,15 @@ class Duel:
             self.board = rot90(self.board, self.playerSequence.rotationPerPlay)
             self.rawPlayerSequence = f"{self.rawPlayerSequence[3:]}{self.rawPlayerSequence[0:3]}"
 
-            # winner: str = self.__checkForWinner()
+            winner: str = self.__checkForWinner()
 
-            # if winner == 'w' or winner == 'b':
-            #     return winner
+            if (winner == 'w' or winner == 'b') and not withStatistics:
+                return winner
             
         if withStatistics:
             for teamColor, computationTimes in timeGameStatistics.items():
                 meanComputationTime: float = sum(computationTimes) / len(computationTimes)
-                print(f"Team '{teamColor}' has an average computation time of {meanComputationTime:.3f}")
+                print(f"Team '{teamColor}' has an average computation time of {meanComputationTime:.3f}s")
             for teamColor, visitedStates in statesGameStatistics.items():
                 meanStatesVisited: int = sum(visitedStates) // len(visitedStates)
                 print(f"Team '{teamColor}' has an average number of visited states of {meanStatesVisited}")
