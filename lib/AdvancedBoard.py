@@ -38,8 +38,6 @@ class AdvancedBoard:
         self.computeDepth: Callable[[int], int] = advancedHeuristic.computeDepth
         self.weights: dict[chr, float] = advancedHeuristic.getWeights(self.board)
         self.__piecesByColor: defaultdict[chr, list[str]] = self.__getPiecesByColor()
-        self.__lastMove: list[tuple[int, int]] = [(0,0), (0,0)]
-        self.__lastBoardEvaluation: float = float('-inf')
 
     def __getPiecesByColor(self) -> defaultdict[chr, list[str]]:
         """
@@ -188,17 +186,6 @@ class AdvancedBoard:
                 AdvancedBoard.__BOARD_STATES_VISITED += 1
 
             if depth == 0 or self.isGameOver():
-                # stores best move depending
-                # on its evaluation
-                if self.computeEvaluation() > self.__lastBoardEvaluation:
-                    bestMove.clear()
-                    bestMove.append(self.__lastMove)
-                    
-                    self.__lastBoardEvaluation = self.computeEvaluation()
-
-                elif self.computeEvaluation() == self.__lastBoardEvaluation:
-                    bestMove.append(self.__lastMove)
-
                 return self.computeEvaluation()
 
             if isMaximizing:
@@ -220,9 +207,6 @@ class AdvancedBoard:
                         self.__piecesByColor[currentColor].remove(piece)
                         self.__piecesByColor[currentColor].append(f"{piece[0:2]}{move[0]}{move[1]}")
 
-                        if isRoot:
-                            self.__lastMove = [(i, j), (move[0], move[1])]
-                        
                         currentEvaluation: float = minimaxAlphaBeta(depth - 1, alpha, beta, bestMove)
 
                         if isOvertime:
@@ -235,7 +219,6 @@ class AdvancedBoard:
                         self.__piecesByColor[currentColor].remove(f"{piece[0:2]}{move[0]}{move[1]}")
                         self.__piecesByColor[currentColor].append(piece)
 
-                        # maxEvaluation = max(maxEvaluation, currentEvaluation)
                         if currentEvaluation > maxEvaluation:
                             maxEvaluation = currentEvaluation
 

@@ -20,7 +20,7 @@ class TimeScalingHeuristic(Heuristic):
             'k': (lambda _: 1e3)
         }
 
-        self.__BASE_DEPTH_: int = 2
+        self.__BASE_DEPTH_: int = 3
         self.__BASE_STANDARD_VARIANCE: float = np.var(list(map(lambda w: w(0), self.__WEIGHTS.values())))
 
     def getWeights(self) -> dict:
